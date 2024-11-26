@@ -1,0 +1,29 @@
+name: load-base-env-vars
+description: |
+  DO NOT USE THIS ACTION DIRECTLY.
+  Use dmlc/xgboost-devops/load-base-env-vars so that it can dispatch to
+  a specific version of the implementation.
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Download base environment variables file
+      uses: actions/download-artifact@v4
+      with:
+        name: xgboost-ci-actions-env-vars
+    - name: Set environment variables from file into GITHUB_ENV
+      shell: bash
+      # Only set the env var if it is not already set
+      # the ${!VARIABLE} syntax is called "indirect expansion" and it is kind of equivalent to ${${env_var_name}}
+      #      in other words, expand to find the variable name, then dereference that variable name
+      # The goofy env_var_value filtering through tr is to ensure that the strings don't include quotes.
+      run: |
+        while read LINE; do
+          env_var_name="$( cut -d '=' -f 1 <<< "$LINE" )";
+          if [ "${!env_var_name}" = "" ]; then
+            env_var_value="$(echo ${LINE#*=} | tr -d '"')"
+            echo "${env_var_name}=$(echo "${env_var_value}" | sed 's/^,//')" >> ${GITHUB_ENV};
+          else
+            echo "Load base env info: ignoring new value for "${env_var_name}" in loading base env vars. It is already set to "${!env_var_name}"." >&2;
+          fi
+        done <xgboost-ci-actions-env-vars

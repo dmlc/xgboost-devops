@@ -1,0 +1,26 @@
+name: Stash environment variables as a file
+description: |
+  Clones a particular branch/ref of the dmlc/xgboost-devops repo, then
+  calls the implementation action dmlc/xgboost-devops/impls/stash-base-env-vars,
+  which writes some notable environment variables to a file.
+
+  This is a strategy to pass environment variable values between jobs. There are
+  a lot of variables that need to be passed to a lot of child workflows. Because
+  the top-level env is not inherited by child workflows, we either have
+  to have lots of inputs, or pass these environment variables another way. The
+  idea here is that the top-level job exports these values, then the child
+  workflow jobs start with loading these values.
+
+  Adapted from rapidsai/shared-actions, credit to Mike Sarahan.
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Clone xgboost-devops repo
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ env.CUSTOM_ACTIONS_REPO || 'dmlc/xgboost-devops' }}
+        ref: ${{ env.CUSTOM_ACTIONS_REF || 'main' }}
+        path: ./xgboost-devops
+    - name: Stash base env vars
+      uses: ./xgboost-devops/impls/stash-base-env-vars

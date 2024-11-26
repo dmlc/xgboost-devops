@@ -1,0 +1,26 @@
+name: Setup miniforge
+description: |
+  Set up a Conda environment using Miniforge. This action dispatches
+  to a specific version of impls/miniforge-setup.
+inputs:
+  environment-name:
+    description: Name of Conda environment
+    required: true
+  environment-file:
+    description: Path to environment file
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Clone XGBoost repo
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ env.CUSTOM_ACTIONS_REPO || 'dmlc/xgboost-devops' }}
+        ref: ${{ env.CUSTOM_ACTIONS_REF || 'main' }}
+        path: ./xgboost-devops
+    - name: Dispatch to implementation
+      uses: ./xgboost-devops/impls/miniforge-setup
+      with:
+        environment-name: ${{ inputs.environment-name }}
+        environment-file: ${{ inputs.environment-file }}

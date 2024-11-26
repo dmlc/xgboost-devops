@@ -1,0 +1,23 @@
+name: Stash environment variables as a file
+description: |
+  DO NOT USE THIS ACTION DIRECTLY.
+  Use dmlc/xgboost-devops/stash-base-env-vars so that it can dispatch to
+  a specific version of the implementation.
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Write base env vars to a file
+      shell: bash
+      run: |
+        cat <<EOF > xgboost-ci-actions-env-vars
+        CUSTOM_ACTIONS_REPO=${CUSTOM_ACTIONS_REPO}
+        CUSTOM_ACTIONS_REF=${CUSTOM_ACTIONS_REF}
+        EOF
+    - name: Upload env vars file
+      uses: actions/upload-artifact@v4
+      with:
+        name: xgboost-ci-actions-env-vars
+        path: xgboost-ci-actions-env-vars
+    - name: Re-export env vars so that defaults take effect
+      uses: ./xgboost-devops/impls/load-base-env-vars
