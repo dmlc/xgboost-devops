@@ -1,10 +1,10 @@
 name: load-base-env-vars
 description: |
   Clones a particular branch/ref of the dmlc/xgboost-devops repo, then
-  calls the implementation action dmlc/xgboost-devops/impls/load-base-env-vars,
+  calls the implementation action dmlc/xgboost-devops/actions/impls/load-base-env-vars,
   which loads some environment variables from a file.
 
-  This script is the counterpart to dmlc/xgboost-devops/stash-base-env-vars.
+  This script is the counterpart to dmlc/xgboost-devops/actions/stash-base-env-vars.
   It is called by child workflows to load variables that are set by the top-level
   workflow.
 
@@ -19,5 +19,6 @@ runs:
         repository: ${{ env.CUSTOM_ACTIONS_REPO || 'dmlc/xgboost-devops' }}
         ref: ${{ env.CUSTOM_ACTIONS_REF || 'main' }}
         path: ./xgboost-devops
+        sparse-checkout: actions
     - name: Load base env vars
-      uses: ./xgboost-devops/impls/load-base-env-vars
+      uses: ./xgboost-devops/actions/impls/load-base-env-vars

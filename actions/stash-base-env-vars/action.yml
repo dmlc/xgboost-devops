@@ -1,7 +1,7 @@
 name: Stash environment variables as a file
 description: |
   Clones a particular branch/ref of the dmlc/xgboost-devops repo, then
-  calls the implementation action dmlc/xgboost-devops/impls/stash-base-env-vars,
+  calls the implementation action dmlc/xgboost-devops/actions/impls/stash-base-env-vars,
   which writes some notable environment variables to a file.
 
   This is a strategy to pass environment variable values between jobs. There are
@@ -22,5 +22,6 @@ runs:
         repository: ${{ env.CUSTOM_ACTIONS_REPO || 'dmlc/xgboost-devops' }}
         ref: ${{ env.CUSTOM_ACTIONS_REF || 'main' }}
         path: ./xgboost-devops
+        sparse-checkout: actions
     - name: Stash base env vars
-      uses: ./xgboost-devops/impls/stash-base-env-vars
+      uses: ./xgboost-devops/actions/impls/stash-base-env-vars

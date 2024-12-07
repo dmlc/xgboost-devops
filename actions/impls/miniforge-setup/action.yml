@@ -1,7 +1,7 @@
 name: Setup miniforge
 description: |
   DO NOT USE THIS ACTION DIRECTLY.
-  Use dmlc/xgboost-devops/miniforge-setup so that it can dispatch to
+  Use dmlc/xgboost-devops/actions/miniforge-setup so that it can dispatch to
   a specific version of the implementation.
 inputs:
   environment-name:

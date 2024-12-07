@@ -6,10 +6,10 @@ to reduce duplicated code within workflow YAML files. The custom actions are hos
 [dmlc/xgboost-devops](https://github.com/dmlc/xgboost-devops>), to make it easy to test changes to the custom actions in
 a pull request or a fork.
 
-In a workflow file, we'd refer to `dmlc/xgboost-devops/{custom-action}@main`. For example:
+In a workflow file, we'd refer to `dmlc/xgboost-devops/actions/{custom-action}@main`. For example:
 
 ```yaml
-- uses: dmlc/xgboost-devops/miniforge-setup@main
+- uses: dmlc/xgboost-devops/actions/miniforge-setup@main
   with:
     environment-name: cpp_test
     environment-file: ops/conda_env/cpp_test.yml
@@ -17,10 +17,10 @@ In a workflow file, we'd refer to `dmlc/xgboost-devops/{custom-action}@main`. Fo
 
 Each custom action consists of two components:
 
-* Main script (`dmlc/xgboost-devops/{custom-action}/action.yml`): dispatches to a specific version
+* Main script (`dmlc/xgboost-devops/actions/{custom-action}/action.yml`): dispatches to a specific version
   of the implementation script (see the next item). The main script clones `xgboost-devops` from
   a specified fork at a particular ref, allowing us to easily test changes to the custom action.
-* Implementation script (`dmlc/xgboost-devops/impls/{custom-action}/action.yml`): Implements the
+* Implementation script (`dmlc/xgboost-devops/actions/impls/{custom-action}/action.yml`): Implements the
   custom script.
 
 This design was inspired by [Mike Sarahan](https://github.com/msarahan)'s work in

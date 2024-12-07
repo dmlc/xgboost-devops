@@ -1,7 +1,7 @@
 name: load-base-env-vars
 description: |
   DO NOT USE THIS ACTION DIRECTLY.
-  Use dmlc/xgboost-devops/load-base-env-vars so that it can dispatch to
+  Use dmlc/xgboost-devops/actions/load-base-env-vars so that it can dispatch to
   a specific version of the implementation.
 
 runs:

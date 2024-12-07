@@ -1,7 +1,7 @@
 name: Stash environment variables as a file
 description: |
   DO NOT USE THIS ACTION DIRECTLY.
-  Use dmlc/xgboost-devops/stash-base-env-vars so that it can dispatch to
+  Use dmlc/xgboost-devops/actions/stash-base-env-vars so that it can dispatch to
   a specific version of the implementation.
 
 runs:
@@ -20,4 +20,4 @@ runs:
         name: xgboost-ci-actions-env-vars
         path: xgboost-ci-actions-env-vars
     - name: Re-export env vars so that defaults take effect
-      uses: ./xgboost-devops/impls/load-base-env-vars
+      uses: ./xgboost-devops/actions/impls/load-base-env-vars
