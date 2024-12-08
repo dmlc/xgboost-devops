@@ -1,0 +1,64 @@
+name: Build and publish image
+run-name: "Build image${{ (inputs.upstream_repository != '') && format(' - triggered by: {0}', inputs.upstream_repository) || '' }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      upstream_repository:
+        required: false
+        type: string
+      upstream_job:
+        required: false
+        type: string
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: "0 7 * * *"  # Run once daily
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  BRANCH_NAME: >-
+    ${{ github.event.pull_request.number && 'PR-' }}${{ github.event.pull_request.number || github.ref_name }}
+  PUBLISH_CONTAINER: 1
+
+jobs:
+  build-containers:
+    name: Build CI containers (${{ matrix.container_id }})
+    runs-on:
+      - runs-on
+      - runner=${{ matrix.runner }}
+      - run-id=${{ github.run_id }}
+      - tag=build-containers-${{ matrix.container_id }}
+    strategy:
+      fail-fast: false
+      matrix:
+        container_id:
+          - xgb-ci.clang_tidy
+          - xgb-ci.cpu
+          - xgb-ci.gpu
+          - xgb-ci.gpu_build_r_rockylinux8
+          - xgb-ci.gpu_build_rockylinux8
+          - xgb-ci.gpu_build_rockylinux8_dev_ver
+          - xgb-ci.jvm
+          - xgb-ci.jvm_gpu_build
+          - xgb-ci.manylinux_2_28_x86_64
+          - xgb-ci.manylinux2014_x86_64
+        runner: [linux-amd64-cpu]
+        include:
+          - container_id: xgb-ci.aarch64
+            runner: linux-arm64-cpu
+          - container_id: xgb-ci.manylinux2014_aarch64
+            runner: linux-arm64-cpu
+    steps:
+      # Restart Docker daemon so that it recognizes the ephemeral disks
+      - run: sudo systemctl restart docker
+      - uses: actions/checkout@v4
+        with:
+          submodules: "true"
+      - name: Build ${{ matrix.container_id }}
+        run: bash containers/docker_build.sh ${{ matrix.container_id }}

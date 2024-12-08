@@ -1,0 +1,18 @@
+# Custom images with CUDA toolkit installed
+# See vm_images/ for instructions for building the images
+images:
+  linux-amd64:
+    platform: "linux"
+    arch: "x64"
+    owner: "492475357299"  # XGBooost CI
+    name: "xgboost-ci-runs-on-linux-*"
+
+runners:
+  linux-amd64-cpu:
+    cpu: 32
+    family: ["c7i-flex", "c7i", "c7a", "c5", "c5a"]
+    image: linux-amd64
+  linux-arm64-cpu:
+    cpu: 32
+    family: ["c6g", "c7g"]
+    image: ubuntu24-full-arm64
