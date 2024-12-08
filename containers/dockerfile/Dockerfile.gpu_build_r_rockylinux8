@@ -2,6 +2,19 @@ ARG CUDA_VERSION=notset
 FROM nvcr.io/nvidia/cuda:$CUDA_VERSION-devel-rockylinux8
 ARG CUDA_VERSION
 ARG R_VERSION
+ARG MINIFORGE_VERSION=24.9.2-0
+ARG CMAKE_VERSION=3.31.2
+
+SHELL ["/bin/bash", "-c"]
+
+ENV PATH=/opt/miniforge/bin:/usr/local/ninja:/opt/software/packages/bin:/opt/R/$R_VERSION/bin:$PATH
+ENV LD_LIBRARY_PATH=/opt/software/packages/lib:/opt/R/$R_VERSION/lib64:$LD_LIBRARY_PATH
+ENV CC=/opt/rh/gcc-toolset-10/root/usr/bin/gcc
+ENV CXX=/opt/rh/gcc-toolset-10/root/usr/bin/c++
+ENV CPP=/opt/rh/gcc-toolset-10/root/usr/bin/cpp
+ENV F77=/opt/rh/gcc-toolset-10/root/usr/bin/gfortran
+ENV FC=/opt/rh/gcc-toolset-10/root/usr/bin/gfortran
+ENV GOSU_VERSION=1.10
 
 # Install all basic requirements
 RUN \
@@ -15,15 +28,13 @@ RUN \
                    pcre2-devel libcurl-devel texlive-* \
                    gcc-toolset-10-gcc gcc-toolset-10-binutils gcc-toolset-10-gcc-c++ \
                    gcc-toolset-10-gcc-gfortran gcc-toolset-10-libquadmath-devel \
-                   gcc-toolset-10-runtime gcc-toolset-10-libstdc++-devel
-
-ENV PATH=/opt/miniforge/bin:/usr/local/ninja:/opt/software/packages/bin:/opt/R/$R_VERSION/bin:$PATH
-ENV LD_LIBRARY_PATH=/opt/software/packages/lib:/opt/R/$R_VERSION/lib64:$LD_LIBRARY_PATH
-ENV CC=/opt/rh/gcc-toolset-10/root/usr/bin/gcc
-ENV CXX=/opt/rh/gcc-toolset-10/root/usr/bin/c++
-ENV CPP=/opt/rh/gcc-toolset-10/root/usr/bin/cpp
-ENV F77=/opt/rh/gcc-toolset-10/root/usr/bin/gfortran
-ENV FC=/opt/rh/gcc-toolset-10/root/usr/bin/gfortran
+                   gcc-toolset-10-runtime gcc-toolset-10-libstdc++-devel && \
+    wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-x86_64.sh && \
+    bash conda.sh -b -p /opt/miniforge && \
+    /opt/miniforge/bin/python -m pip install awscli && \
+    # CMake
+    wget -nv -O cmake.sh https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh && \
+    bash cmake.sh --skip-license --prefix=/usr
 
 RUN \
     wget -nv -nc https://cran.r-project.org/src/base/R-4/R-$R_VERSION.tar.gz  && \
@@ -32,17 +43,6 @@ RUN \
     ./configure --prefix=/opt/R/$R_VERSION --enable-R-shlib --with-pcrel  && \
     make -j$(nproc)  && \
     make install
-
-run \
-    # Python
-    wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/24.3.0-0/Miniforge3-24.3.0-0-Linux-x86_64.sh && \
-    bash conda.sh -b -p /opt/miniforge && \
-    /opt/miniforge/bin/python -m pip install auditwheel awscli && \
-    # CMake
-    wget -nv -nc https://cmake.org/files/v3.29/cmake-3.29.5-linux-x86_64.sh --no-check-certificate && \
-    bash cmake-3.29.5-linux-x86_64.sh --skip-license --prefix=/usr
-
-ENV GOSU_VERSION=1.10
 
 # Install lightweight sudo (not bound to TTY)
 RUN set -ex; \

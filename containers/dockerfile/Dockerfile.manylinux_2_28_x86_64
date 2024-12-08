@@ -1,7 +1,10 @@
 FROM quay.io/pypa/manylinux_2_28_x86_64
 
-# Install lightweight sudo (not bound to TTY)
+SHELL ["/bin/bash", "-c"]
+
 ENV GOSU_VERSION=1.10
+
+# Install lightweight sudo (not bound to TTY)
 RUN set -ex; \
     curl -o /usr/local/bin/gosu -L "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" && \
     chmod +x /usr/local/bin/gosu && \
