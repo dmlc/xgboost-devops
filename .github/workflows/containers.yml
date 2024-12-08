@@ -1,5 +1,4 @@
 name: Build and publish image
-run-name: "Build image${{ (inputs.upstream_repository != '') && format(' - triggered by: {0}', inputs.upstream_repository) || '' }}"
 
 on:
   workflow_dispatch:
@@ -55,6 +54,10 @@ jobs:
           - container_id: xgb-ci.manylinux2014_aarch64
             runner: linux-arm64-cpu
     steps:
+      - name: Workflow trigger information
+        run: |
+          echo "Triggered by repo ${{ inputs.upstream_repository }}, job ${{ inputs.upstream_job }}"
+        if: inputs.upstream_repository != '' && inputs.upstream_job != ''
       # Restart Docker daemon so that it recognizes the ephemeral disks
       - run: sudo systemctl restart docker
       - uses: actions/checkout@v4
