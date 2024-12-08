@@ -14,7 +14,7 @@ on:
       - main
   pull_request:
   schedule:
-    - cron: "0 7 * * *"  # Run once daily
+    - cron: "0 7 * * 1"  # Run once weekly
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
