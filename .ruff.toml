@@ -1,0 +1,7 @@
+line-length = 120
+
+[lint]
+select = [
+    # numpy 2.0 deprecations/removals
+    "NPY201",
+]

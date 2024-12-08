@@ -115,7 +115,7 @@ if __name__ == "__main__":
         required=True,
         help=(
             "Tag to assign to the newly built container, e.g. "
-            "492475357299.dkr.ecr.us-west-2.amazonaws.com/xgb-ci.gpu:master"
+            "492475357299.dkr.ecr.us-west-2.amazonaws.com/xgb-ci.gpu:main"
         ),
     )
     parser.add_argument(
