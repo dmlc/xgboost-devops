@@ -6,6 +6,7 @@ ARG RAPIDS_VERSION
 ARG NCCL_VERSION
 ARG RAPIDSAI_CONDA_CHANNEL="rapidsai"
 ARG MINIFORGE_VERSION=24.9.2-0
+ARG PYTHON_VERSION=3.10
 
 SHELL ["/bin/bash", "-c"]
 
@@ -29,7 +30,7 @@ RUN \
     export NCCL_SHORT_VER=$(echo "$NCCL_VERSION" | cut -d "-" -f 1) && \
     export CUDA_SHORT_VER=$(echo "$CUDA_VERSION" | grep -o -E '[0-9]+\.[0-9]') && \
     mamba create -y -n gpu_test -c ${RAPIDSAI_CONDA_CHANNEL} -c conda-forge -c nvidia \
-        python=3.10 "cudf=$RAPIDS_VERSION.*" "rmm=$RAPIDS_VERSION.*" cuda-version=$CUDA_SHORT_VER \
+        python=$PYTHON_VERSION "cudf=$RAPIDS_VERSION.*" "rmm=$RAPIDS_VERSION.*" cuda-version=$CUDA_SHORT_VER \
         "nccl>=${NCCL_SHORT_VER}" \
         "dask<=2024.10.0" \
         "distributed<=2024.10.0" \
