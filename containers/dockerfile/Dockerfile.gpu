@@ -5,10 +5,15 @@ ARG RAPIDS_VERSION
   # Should be first 4 digits (e.g. 24.06)
 ARG NCCL_VERSION
 ARG RAPIDSAI_CONDA_CHANNEL="rapidsai"
+ARG MINIFORGE_VERSION=24.9.2-0
+ARG PYTHON_VERSION=3.10
 
-# Environment
-ENV DEBIAN_FRONTEND=noninteractive
 SHELL ["/bin/bash", "-c"]
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH=/opt/miniforge/bin:$PATH
+ENV GOSU_VERSION=1.10
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 
 # Install all basic requirements
 RUN \
@@ -16,18 +21,16 @@ RUN \
     apt-get update && \
     apt-get install -y wget unzip bzip2 libgomp1 build-essential openjdk-8-jdk-headless && \
     apt-get install libnccl2 libnccl-dev -y --allow-change-held-packages && \
-    # Python
-    wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/24.3.0-0/Miniforge3-24.3.0-0-Linux-x86_64.sh && \
+    # Miniforge
+    wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-x86_64.sh && \
     bash conda.sh -b -p /opt/miniforge
-
-ENV PATH=/opt/miniforge/bin:$PATH
 
 # Create new Conda environment with cuDF, Dask, and cuPy
 RUN \
     export NCCL_SHORT_VER=$(echo "$NCCL_VERSION" | cut -d "-" -f 1) && \
     export CUDA_SHORT_VER=$(echo "$CUDA_VERSION" | grep -o -E '[0-9]+\.[0-9]') && \
     mamba create -y -n gpu_test -c ${RAPIDSAI_CONDA_CHANNEL} -c conda-forge -c nvidia \
-        python=3.10 "cudf=$RAPIDS_VERSION.*" "rmm=$RAPIDS_VERSION.*" cuda-version=$CUDA_SHORT_VER \
+        python=$PYTHON_VERSION "cudf=$RAPIDS_VERSION.*" "rmm=$RAPIDS_VERSION.*" cuda-version=$CUDA_SHORT_VER \
         "nccl>=${NCCL_SHORT_VER}" \
         "dask<=2024.10.0" \
         "distributed<=2024.10.0" \
@@ -36,9 +39,6 @@ RUN \
         python-kubernetes urllib3 graphviz hypothesis loky \
         "pyspark>=3.4.0" cloudpickle cuda-python && \
     mamba clean --all --yes
-
-ENV GOSU_VERSION=1.10
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 
 # Install lightweight sudo (not bound to TTY)
 RUN set -ex; \

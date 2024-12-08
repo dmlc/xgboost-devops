@@ -3,7 +3,7 @@
 # Each container will be built using the definition from
 # containers/dockerfile/Dockerfile.CONTAINER_DEF
 
-rapids_versions:
+x-rapids_versions:
   stable: &rapids_version "24.10"
   dev: &dev_rapids_version "24.12"
 

@@ -3,6 +3,17 @@ FROM nvcr.io/nvidia/cuda:$CUDA_VERSION-devel-rockylinux8
 ARG CUDA_VERSION
 ARG NCCL_VERSION
 ARG RAPIDS_VERSION
+ARG MINIFORGE_VERSION=24.9.2-0
+ARG CMAKE_VERSION=3.31.2
+
+SHELL ["/bin/bash", "-c"]
+
+ENV PATH=/opt/miniforge/bin:/usr/local/ninja:$PATH
+ENV CC=/opt/rh/gcc-toolset-10/root/usr/bin/gcc
+ENV CXX=/opt/rh/gcc-toolset-10/root/usr/bin/c++
+ENV CPP=/opt/rh/gcc-toolset-10/root/usr/bin/cpp
+ENV CUDAHOSTCXX=/opt/rh/gcc-toolset-10/root/usr/bin/c++
+ENV GOSU_VERSION=1.10
 
 # Install all basic requirements
 RUN \
@@ -12,13 +23,13 @@ RUN \
     dnf -y install dnf-plugins-core && \
     dnf config-manager --set-enabled powertools && \
     dnf install -y tar unzip wget xz git which ninja-build gcc-toolset-10-gcc gcc-toolset-10-binutils gcc-toolset-10-gcc-c++ && \
-    # Python
-    wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/24.3.0-0/Miniforge3-24.3.0-0-Linux-x86_64.sh && \
+    # Miniforge
+    wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-x86_64.sh && \
     bash conda.sh -b -p /opt/miniforge && \
     /opt/miniforge/bin/python -m pip install awscli && \
     # CMake
-    wget -nv -nc https://cmake.org/files/v3.29/cmake-3.29.5-linux-x86_64.sh --no-check-certificate && \
-    bash cmake-3.29.5-linux-x86_64.sh --skip-license --prefix=/usr
+    wget -nv -O cmake.sh https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh && \
+    bash cmake.sh --skip-license --prefix=/usr
 
 # NCCL2 (License: https://docs.nvidia.com/deeplearning/sdk/nccl-sla/index.html)
 RUN \
@@ -27,14 +38,6 @@ RUN \
     dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/cuda-rhel7.repo && \
     dnf -y update && \
     dnf install -y libnccl-${NCCL_VERSION}+cuda${CUDA_SHORT} libnccl-devel-${NCCL_VERSION}+cuda${CUDA_SHORT}
-
-ENV PATH=/opt/miniforge/bin:/usr/local/ninja:$PATH
-ENV CC=/opt/rh/gcc-toolset-10/root/usr/bin/gcc
-ENV CXX=/opt/rh/gcc-toolset-10/root/usr/bin/c++
-ENV CPP=/opt/rh/gcc-toolset-10/root/usr/bin/cpp
-ENV CUDAHOSTCXX=/opt/rh/gcc-toolset-10/root/usr/bin/c++
-
-ENV GOSU_VERSION=1.10
 
 # Install gRPC
 # Patch Abseil to apply https://github.com/abseil/abseil-cpp/issues/1629

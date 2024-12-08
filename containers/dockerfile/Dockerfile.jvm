@@ -1,33 +1,36 @@
 FROM rockylinux:8
+ARG MINIFORGE_VERSION=24.9.2-0
+ARG CMAKE_VERSION=3.31.2
+ARG MAVEN_VERSION=3.9.9
 
-# Install all basic requirements
-RUN \
-    dnf -y update && \
-    dnf -y install dnf-plugins-core && \
-    dnf config-manager --set-enabled powertools && \
-    dnf install -y tar unzip make bzip2 wget xz git which ninja-build java-1.8.0-openjdk-devel \
-                   gcc-toolset-10-gcc gcc-toolset-10-binutils gcc-toolset-10-gcc-c++ \
-                   gcc-toolset-10-runtime gcc-toolset-10-libstdc++-devel && \
-    # Python
-    wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/24.3.0-0/Miniforge3-24.3.0-0-Linux-x86_64.sh && \
-    bash conda.sh -b -p /opt/miniforge && \
-    # CMake
-    wget -nv -nc https://cmake.org/files/v3.29/cmake-3.29.5-linux-x86_64.sh --no-check-certificate && \
-    bash cmake-3.29.5-linux-x86_64.sh --skip-license --prefix=/usr && \
-    # Maven
-    wget -nv -nc https://archive.apache.org/dist/maven/maven-3/3.9.7/binaries/apache-maven-3.9.7-bin.tar.gz && \
-    tar xvf apache-maven-3.9.7-bin.tar.gz -C /opt && \
-    ln -s /opt/apache-maven-3.9.7/ /opt/maven
+SHELL ["/bin/bash", "-c"]
 
 ENV PATH=/opt/miniforge/bin:/opt/maven/bin:$PATH
 ENV CC=/opt/rh/gcc-toolset-10/root/usr/bin/gcc
 ENV CXX=/opt/rh/gcc-toolset-10/root/usr/bin/c++
 ENV CPP=/opt/rh/gcc-toolset-10/root/usr/bin/cpp
+ENV GOSU_VERSION=1.10
+
+# Install all basic requirements
+RUN dnf -y update && \
+    dnf -y install dnf-plugins-core && \
+    dnf config-manager --set-enabled powertools && \
+    dnf install -y tar unzip make bzip2 wget xz git which ninja-build java-1.8.0-openjdk-devel \
+                   gcc-toolset-10-gcc gcc-toolset-10-binutils gcc-toolset-10-gcc-c++ \
+                   gcc-toolset-10-runtime gcc-toolset-10-libstdc++-devel && \
+    # Miniforge
+    wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-x86_64.sh && \
+    bash conda.sh -b -p /opt/miniforge && \
+    # CMake
+    wget -nv -O cmake.sh https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh && \
+    bash cmake.sh --skip-license --prefix=/usr && \
+    # Maven
+    wget -nv -O apache-maven.tar.gz https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
+    tar xvf apache-maven.tar.gz -C /opt && \
+    ln -s /opt/apache-maven-${MAVEN_VERSION}/ /opt/maven
 
 # Install Python packages
 RUN pip install numpy pytest scipy scikit-learn wheel kubernetes awscli
-
-ENV GOSU_VERSION=1.10
 
 # Install lightweight sudo (not bound to TTY)
 RUN set -ex; \
