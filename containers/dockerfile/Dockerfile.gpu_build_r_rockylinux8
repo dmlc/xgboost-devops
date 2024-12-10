@@ -8,7 +8,7 @@ ARG CMAKE_VERSION=3.31.2
 SHELL ["/bin/bash", "-c"]
 
 ENV PATH=/usr/local/ninja:/opt/software/packages/bin:$PATH
-ENV LD_LIBRARY_PATH=/opt/software/packages/lib:/opt/R/$R_VERSION/lib64:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/opt/software/packages/lib:/opt/R/$R_VERSION/lib64:/opt/R/$R_VERSION/bin:$LD_LIBRARY_PATH
 ENV CC=/opt/rh/gcc-toolset-10/root/usr/bin/gcc
 ENV CXX=/opt/rh/gcc-toolset-10/root/usr/bin/c++
 ENV CPP=/opt/rh/gcc-toolset-10/root/usr/bin/cpp
