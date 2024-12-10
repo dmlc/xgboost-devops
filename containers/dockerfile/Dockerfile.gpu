@@ -34,8 +34,9 @@ RUN \
         "nccl>=${NCCL_SHORT_VER}" \
         "dask<=2024.10.0" \
         "distributed<=2024.10.0" \
+        "scikit-learn<=1.5.2" \
         "dask-cuda=$RAPIDS_VERSION.*" "dask-cudf=$RAPIDS_VERSION.*" cupy \
-        numpy pytest pytest-timeout scipy scikit-learn pandas matplotlib wheel \
+        numpy pytest pytest-timeout scipy pandas matplotlib wheel \
         python-kubernetes urllib3 graphviz hypothesis loky \
         "pyspark>=3.4.0" cloudpickle cuda-python && \
     mamba clean --all --yes
