@@ -9,13 +9,13 @@ packer {
 
 locals {
   ami_name_prefix = "xgboost-ci"
-  image_name      = "RunsOn worker with Ubuntu 24.04 + CUDA driver"
+  image_name      = "RunsOn worker with Ubuntu 24.04 AMD64 + CUDA driver"
   region          = "us-west-2"
   timestamp       = regex_replace(timestamp(), "[- TZ:]", "")
   volume_size     = 40
 }
 
-data "amazon-ami" "aws-ubuntu-x64" {
+data "amazon-ami" "aws-ubuntu-amd64" {
   filters = {
     name                = "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"
     root-device-type    = "ebs"
@@ -25,9 +25,9 @@ data "amazon-ami" "aws-ubuntu-x64" {
   owners      = ["amazon"]
 }
 
-source "amazon-ebs" "runs-on-linux" {
-  source_ami                  = "${data.amazon-ami.aws-ubuntu-x64.id}"
-  ami_name                    = "${local.ami_name_prefix}-runs-on-linux-${local.timestamp}"
+source "amazon-ebs" "runs-on-linux-amd64" {
+  source_ami                  = "${data.amazon-ami.aws-ubuntu-amd64.id}"
+  ami_name                    = "${local.ami_name_prefix}-runs-on-linux-amd64-${local.timestamp}"
   ami_description             = "${local.image_name}"
   ami_regions                 = ["${local.region}"]
   ami_virtualization_type     = "hvm"
@@ -60,7 +60,7 @@ source "amazon-ebs" "runs-on-linux" {
 }
 
 build {
-  sources = ["source.amazon-ebs.runs-on-linux"]
+  sources = ["source.amazon-ebs.runs-on-linux-amd64"]
 
   provisioner "shell" {
     script      = "install_drivers.sh"
