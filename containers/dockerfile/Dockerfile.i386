@@ -3,6 +3,20 @@ FROM i386/debian:sid
 SHELL ["/bin/bash", "-c"]
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV GOSU_VERSION=1.10
 
 RUN apt-get update && \
-    apt-get install -y tar unzip wget git build-essential ninja-build cmake
+    apt-get install -y tar unzip wget git build-essential ninja-build cmake curl
+
+# Install lightweight sudo (not bound to TTY)
+RUN set -ex; \
+    curl -o /usr/local/bin/gosu -L "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-i386" && \
+    chmod +x /usr/local/bin/gosu && \
+    gosu nobody true
+
+# Default entry-point to use if running locally
+# It will preserve attributes of created files
+COPY entrypoint.sh /scripts/
+
+WORKDIR /workspace
+ENTRYPOINT ["/scripts/entrypoint.sh"]
