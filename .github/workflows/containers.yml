@@ -14,9 +14,11 @@ on:
       - main
     paths:
       - 'containers/**'
+      - '.github/workflows/containers.yml'
   pull_request:
     paths:
       - 'containers/**'
+      - '.github/workflows/containers.yml'
   schedule:
     - cron: "0 7 * * 1"  # Run once weekly
 
@@ -51,6 +53,7 @@ jobs:
           - xgb-ci.jvm_gpu_build
           - xgb-ci.manylinux_2_28_x86_64
           - xgb-ci.manylinux2014_x86_64
+          - xgb-ci.i386
         runner: [linux-amd64-cpu]
         include:
           - container_id: xgb-ci.aarch64

@@ -70,3 +70,6 @@ xgb-ci.jvm_gpu_build:
   build_args:
     CUDA_VERSION: "12.4.1"
     NCCL_VERSION: "2.23.4-1"
+
+xgb-ci.i386:
+  container_def: i386
