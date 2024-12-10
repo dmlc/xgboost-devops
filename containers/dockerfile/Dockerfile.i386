@@ -6,11 +6,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV GOSU_VERSION=1.10
 
 RUN apt-get update && \
-    apt-get install -y tar unzip wget git build-essential ninja-build cmake
+    apt-get install -y tar unzip wget git build-essential ninja-build cmake curl
 
 # Install lightweight sudo (not bound to TTY)
 RUN set -ex; \
-    curl -o /usr/local/bin/gosu -L "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" && \
+    curl -o /usr/local/bin/gosu -L "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-i386" && \
     chmod +x /usr/local/bin/gosu && \
     gosu nobody true
 
