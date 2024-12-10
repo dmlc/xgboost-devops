@@ -9,7 +9,7 @@ dependencies:
 - pytest-cov
 - numpy
 - scipy
-- scikit-learn<=1.5.2
+- scikit-learn
 - pandas
 - matplotlib
 - dask
