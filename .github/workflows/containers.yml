@@ -45,6 +45,7 @@ jobs:
         container_id:
           - xgb-ci.clang_tidy
           - xgb-ci.cpu
+          - xgb-ci.cpu_build_r_doc
           - xgb-ci.gpu
           - xgb-ci.gpu_build_r_rockylinux8
           - xgb-ci.gpu_build_rockylinux8
