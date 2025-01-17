@@ -27,6 +27,9 @@ xgb-ci.gpu_build_r_rockylinux8:
     CUDA_VERSION: "12.4.1"
     R_VERSION: "4.3.2"
 
+xgb-ci.cpu_build_r_doc:
+  container_def: cpu_build_r_doc
+
 xgb-ci.gpu:
   container_def: gpu
   build_args:
