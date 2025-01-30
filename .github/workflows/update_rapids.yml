@@ -41,4 +41,3 @@ jobs:
           base: master
           title: "[CI] Update RAPIDS to latest stable"
           commit-message: "[CI] Update RAPIDS to latest stable"
-      
