@@ -4,8 +4,8 @@
 # containers/dockerfile/Dockerfile.CONTAINER_DEF
 
 x-rapids_versions:
-  stable: &rapids_version "24.10"
-  dev: &dev_rapids_version "24.12"
+  stable: &rapids_version "24.12"
+  dev: &dev_rapids_version "25.02"
 
 xgb-ci.gpu_build_rockylinux8:
   container_def: gpu_build_rockylinux8
