@@ -33,11 +33,11 @@ jobs:
           bash containers/update_rapids.sh
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/main'
         with:
           add-paths: |
-            ops/docker
+            containers
           branch: create-pull-request/update-rapids
-          base: master
+          base: main
           title: "[CI] Update RAPIDS to latest stable"
           commit-message: "[CI] Update RAPIDS to latest stable"
