@@ -7,24 +7,28 @@ x-rapids_versions:
   stable: &rapids_version "24.12"
   dev: &dev_rapids_version "25.02"
 
+x-cuda_versions:
+  cuda: &cuda_version "12.8.0"
+  nccl: &nccl_version "2.25.1-1"
+
 xgb-ci.gpu_build_rockylinux8:
   container_def: gpu_build_rockylinux8
   build_args:
-    CUDA_VERSION: "12.4.1"
-    NCCL_VERSION: "2.23.4-1"
+    CUDA_VERSION: *cuda_version
+    NCCL_VERSION: *nccl_version
     RAPIDS_VERSION: *rapids_version
 
 xgb-ci.gpu_build_rockylinux8_dev_ver:
   container_def: gpu_build_rockylinux8
   build_args:
-    CUDA_VERSION: "12.4.1"
-    NCCL_VERSION: "2.23.4-1"
+    CUDA_VERSION: *cuda_version
+    NCCL_VERSION: *nccl_version
     RAPIDS_VERSION: *dev_rapids_version
 
 xgb-ci.gpu_build_r_rockylinux8:
   container_def: gpu_build_r_rockylinux8
   build_args:
-    CUDA_VERSION: "12.4.1"
+    CUDA_VERSION: *cuda_version
     R_VERSION: "4.3.2"
 
 xgb-ci.cpu_build_r_doc:
@@ -33,15 +37,15 @@ xgb-ci.cpu_build_r_doc:
 xgb-ci.gpu:
   container_def: gpu
   build_args:
-    CUDA_VERSION: "12.4.1"
-    NCCL_VERSION: "2.23.4-1"
+    CUDA_VERSION: *cuda_version
+    NCCL_VERSION: *nccl_version
     RAPIDS_VERSION: *rapids_version
 
 xgb-ci.gpu_dev_ver:
   container_def: gpu
   build_args:
-    CUDA_VERSION: "12.4.1"
-    NCCL_VERSION: "2.23.4-1"
+    CUDA_VERSION: *cuda_version
+    NCCL_VERSION: *nccl_version
     RAPIDS_VERSION: *dev_rapids_version
     RAPIDSAI_CONDA_CHANNEL: "rapidsai-nightly"
 
@@ -49,6 +53,8 @@ xgb-ci.clang_tidy:
   container_def: clang_tidy
   build_args:
     CUDA_VERSION: "12.4.1"
+    # TODO(hcho3): Upgrade once clang-tidy is compatible
+    # with CUDA 12.8
 
 xgb-ci.cpu:
   container_def: cpu
@@ -71,8 +77,8 @@ xgb-ci.jvm:
 xgb-ci.jvm_gpu_build:
   container_def: jvm_gpu_build
   build_args:
-    CUDA_VERSION: "12.4.1"
-    NCCL_VERSION: "2.23.4-1"
+    CUDA_VERSION: *cuda_version
+    NCCL_VERSION: *nccl_version
 
 xgb-ci.i386:
   container_def: i386
