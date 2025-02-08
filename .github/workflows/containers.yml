@@ -33,16 +33,16 @@ env:
 
 jobs:
   build-containers:
-    name: Build CI containers (${{ matrix.container_id }})
+    name: Build CI containers (${{ matrix.image_repo }})
     runs-on:
       - runs-on
       - runner=${{ matrix.runner }}
       - run-id=${{ github.run_id }}
-      - tag=build-containers-${{ matrix.container_id }}
+      - tag=build-containers-${{ matrix.image_repo }}
     strategy:
       fail-fast: false
       matrix:
-        container_id:
+        image_repo:
           - xgb-ci.clang_tidy
           - xgb-ci.cpu
           - xgb-ci.cpu_build_r_doc
@@ -57,9 +57,9 @@ jobs:
           - xgb-ci.i386
         runner: [linux-amd64-cpu]
         include:
-          - container_id: xgb-ci.aarch64
+          - image_repo: xgb-ci.aarch64
             runner: linux-arm64-cpu
-          - container_id: xgb-ci.manylinux2014_aarch64
+          - image_repo: xgb-ci.manylinux2014_aarch64
             runner: linux-arm64-cpu
     steps:
       - name: Workflow trigger information
@@ -71,5 +71,5 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: "true"
-      - name: Build ${{ matrix.container_id }}
-        run: bash containers/docker_build.sh ${{ matrix.container_id }}
+      - name: Build ${{ matrix.image_repo }}
+        run: bash containers/docker_build.sh ${{ matrix.image_repo }}

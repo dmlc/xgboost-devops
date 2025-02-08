@@ -8,9 +8,9 @@
 
 USAGE_DOC=$(
 cat <<-EOF
-Usage: containers/docker_build.sh [container_id]
+Usage: containers/docker_build.sh IMAGE_REPO
 
-where [container_id] is used to fetch the container definition and build-time variables
+where IMAGE_REPO is used to fetch the container definition and build-time variables
 from containers/ci_container.yml.
 
 In addition, the following environment variables should be set.
@@ -26,7 +26,7 @@ EOF
 # Configure ECR to delete containers older than 30 days.
 ECR_AWS_ACCOUNT_ID="492475357299"
 ECR_AWS_REGION="us-west-2"
-ECR_URL="${ECR_AWS_ACCOUNT_ID}.dkr.ecr.${ECR_AWS_REGION}.amazonaws.com"
+IMAGE_REGISTRY="${ECR_AWS_ACCOUNT_ID}.dkr.ecr.${ECR_AWS_REGION}.amazonaws.com"
 ECR_LIFECYCLE_RULE=$(
 cat <<-EOF
 {
@@ -64,10 +64,10 @@ then
   echo "${USAGE_DOC}"
   exit 2
 fi
-CONTAINER_ID="$1"
+IMAGE_REPO="$1"
 
 # Fetch CONTAINER_DEF and BUILD_ARGS
-source <(containers/extract_build_args.sh ${CONTAINER_ID} | tee /dev/stderr) 2>&1
+source <(containers/extract_build_args.sh ${IMAGE_REPO} | tee /dev/stderr) 2>&1
 
 if [[ "${PUBLISH_CONTAINER:-}" != "1" ]]   # Any value other than 1 is considered false
 then
@@ -78,26 +78,26 @@ if [[ ${PUBLISH_CONTAINER} -eq 0 ]]
 then
   echo "PUBLISH_CONTAINER not set; the container will not be published"
 else
-  echo "The container will be published at ${ECR_URL}"
+  echo "The container will be published at ${IMAGE_REGISTRY}"
   # Login for Docker registry
   echo "aws ecr get-login-password --region ${ECR_AWS_REGION} |" \
-       "docker login --username AWS --password-stdin ${ECR_URL}"
+       "docker login --username AWS --password-stdin ${IMAGE_REGISTRY}"
   aws ecr get-login-password --region ${ECR_AWS_REGION} \
-    | docker login --username AWS --password-stdin ${ECR_URL}
+    | docker login --username AWS --password-stdin ${IMAGE_REGISTRY}
 fi
 
 # Run Docker build
 set -x
-CONTAINER_TAG="${ECR_URL}/${CONTAINER_ID}:${GITHUB_SHA}"
+IMAGE_URI="${IMAGE_REGISTRY}/${IMAGE_REPO}:${GITHUB_SHA}"
 python3 containers/docker_build.py \
   --container-def ${CONTAINER_DEF} \
-  --container-tag ${CONTAINER_TAG} \
+  --image-uri ${IMAGE_URI} \
   ${BUILD_ARGS}
 
-# Create another alias for the container using the branch name
-CONTAINER_ALIAS="${ECR_URL}/${CONTAINER_ID}:${BRANCH_NAME}"
-echo "docker tag ${CONTAINER_TAG} ${CONTAINER_ALIAS}"
-docker tag ${CONTAINER_TAG} ${CONTAINER_ALIAS}
+# Create an alias for the container using the branch name as tag
+IMAGE_URI_ALIAS="${IMAGE_REGISTRY}/${IMAGE_REPO}:${BRANCH_NAME}"
+echo "docker tag ${IMAGE_URI} ${IMAGE_URI_ALIAS}"
+docker tag ${IMAGE_URI} ${IMAGE_URI_ALIAS}
 
 set +x
 
@@ -105,23 +105,23 @@ set +x
 if [[ ${PUBLISH_CONTAINER} -eq 1 ]]
 then
     # Attempt to create Docker repository; it will fail if the repository already exists
-    echo "aws ecr create-repository --repository-name ${CONTAINER_ID} --region ${ECR_AWS_REGION}"
-    if aws ecr create-repository --repository-name ${CONTAINER_ID} --region ${ECR_AWS_REGION}
+    echo "aws ecr create-repository --repository-name ${IMAGE_REPO} --region ${ECR_AWS_REGION}"
+    if aws ecr create-repository --repository-name ${IMAGE_REPO} --region ${ECR_AWS_REGION}
     then
       # Repository was created. Now set expiration policy
-      echo "aws ecr put-lifecycle-policy --repository-name ${CONTAINER_ID}" \
+      echo "aws ecr put-lifecycle-policy --repository-name ${IMAGE_REPO}" \
            "--region ${ECR_AWS_REGION} --lifecycle-policy-text file:///dev/stdin"
-      echo "${ECR_LIFECYCLE_RULE}" | aws ecr put-lifecycle-policy --repository-name ${CONTAINER_ID} \
+      echo "${ECR_LIFECYCLE_RULE}" | aws ecr put-lifecycle-policy --repository-name ${IMAGE_REPO} \
         --region ${ECR_AWS_REGION} --lifecycle-policy-text file:///dev/stdin
     fi
 
-    echo "docker push --quiet ${CONTAINER_TAG}"
-    if ! time docker push --quiet "${CONTAINER_TAG}"
+    echo "docker push --quiet ${IMAGE_URI}"
+    if ! time docker push --quiet "${IMAGE_URI}"
     then
-        echo "ERROR: could not update Docker cache ${CONTAINER_TAG}"
+        echo "ERROR: could not update Docker cache ${IMAGE_URI}"
         exit 1
     fi
 
-    echo "docker push --quiet ${CONTAINER_ALIAS}"
-    docker push --quiet "${CONTAINER_ALIAS}"
+    echo "docker push --quiet ${IMAGE_URI_ALIAS}"
+    docker push --quiet "${IMAGE_URI_ALIAS}"
 fi
