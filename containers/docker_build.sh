@@ -93,6 +93,12 @@ python3 containers/docker_build.py \
   --container-def ${CONTAINER_DEF} \
   --container-tag ${CONTAINER_TAG} \
   ${BUILD_ARGS}
+
+# Create another alias for the container using the branch name
+CONTAINER_ALIAS="${ECR_URL}/${CONTAINER_ID}:${BRANCH_NAME}"
+echo "docker tag ${CONTAINER_TAG} ${CONTAINER_ALIAS}"
+docker tag ${CONTAINER_TAG} ${CONTAINER_ALIAS}
+
 set +x
 
 # Now push the new container to ECR
@@ -116,10 +122,6 @@ then
         exit 1
     fi
 
-    # Create another alias for the container using the branch name
-    CONTAINER_ALIAS="${ECR_URL}/${CONTAINER_ID}:${BRANCH_NAME}"
-    echo "docker tag ${CONTAINER_TAG} ${CONTAINER_ALIAS}"
-    docker tag ${CONTAINER_TAG} ${CONTAINER_ALIAS}
     echo "docker push --quiet ${CONTAINER_ALIAS}"
     docker push --quiet "${CONTAINER_ALIAS}"
 fi
