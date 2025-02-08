@@ -47,7 +47,7 @@ def parse_build_args(*, raw_build_args: list[str]) -> dict[str, str]:
 
 def docker_build(
     *,
-    container_tag: str,
+    image_uri: str,
     build_args: dict[str, str],
     dockerfile_path: pathlib.Path,
     docker_context_path: pathlib.Path,
@@ -70,7 +70,7 @@ def docker_build(
             "--ulimit",
             "nofile=1024000:1024000",
             "-t",
-            container_tag,
+            image_uri,
             "-f",
             str(dockerfile_path),
             str(docker_context_path),
@@ -90,7 +90,7 @@ def main(*, args: argparse.Namespace) -> None:
     build_args = parse_build_args(raw_build_args=args.build_arg)
 
     docker_build(
-        container_tag=args.container_tag,
+        image_uri=args.image_uri,
         build_args=build_args,
         dockerfile_path=dockerfile_path,
         docker_context_path=docker_context_path,
@@ -110,11 +110,11 @@ if __name__ == "__main__":
         ),
     )
     parser.add_argument(
-        "--container-tag",
+        "--image-uri",
         type=str,
         required=True,
         help=(
-            "Tag to assign to the newly built container, e.g. "
+            "Fully qualified image URI to identify the container, e.g. "
             "492475357299.dkr.ecr.us-west-2.amazonaws.com/xgb-ci.gpu:main"
         ),
     )
