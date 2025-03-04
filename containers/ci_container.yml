@@ -52,9 +52,7 @@ xgb-ci.gpu_dev_ver:
 xgb-ci.clang_tidy:
   container_def: clang_tidy
   build_args:
-    CUDA_VERSION: "12.4.1"
-    # TODO(hcho3): Upgrade once clang-tidy is compatible
-    # with CUDA 12.8
+    CUDA_VERSION: *cuda_version
 
 xgb-ci.cpu:
   container_def: cpu
