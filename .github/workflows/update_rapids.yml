@@ -25,6 +25,11 @@ jobs:
     name: Check latest RAPIDS
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/create-github-app-token@v1
+        id: generate-token
+        with:
+          app-id: ${{ secrets.TOKEN_GENERATOR_APP_ID }}
+          private-key: ${{ secrets.TOKEN_GENERATOR_APP_PRIVATE_KEY }}
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
@@ -41,3 +46,4 @@ jobs:
           base: main
           title: "[CI] Update RAPIDS to latest stable"
           commit-message: "[CI] Update RAPIDS to latest stable"
+          token: ${{ steps.generate-token.outputs.token }}
