@@ -36,7 +36,7 @@ RUN \
         distributed \
         "dask-cuda=$RAPIDS_VERSION.*" "dask-cudf=$RAPIDS_VERSION.*" cupy \
         numpy pytest pytest-timeout scipy scikit-learn pandas matplotlib wheel \
-        python-kubernetes urllib3 graphviz hypothesis "loky=3.4.1" \
+        python-kubernetes urllib3 graphviz hypothesis "loky>=3.5.1" \
         "pyspark>=3.4.0" cloudpickle cuda-python && \
     mamba clean --all --yes
 
