@@ -19,7 +19,7 @@ dependencies:
 - graphviz
 - python-graphviz
 - codecov
-- cmake
+- cmake>=3.26.4,<3.29
 - ninja
 - boto3
 - jsonschema
