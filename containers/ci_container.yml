@@ -4,8 +4,8 @@
 # containers/dockerfile/Dockerfile.CONTAINER_DEF
 
 x-rapids_versions:
-  stable: &rapids_version "24.12"
-  dev: &dev_rapids_version "25.02"
+  stable: &rapids_version "25.02"
+  dev: &dev_rapids_version "25.04"
 
 x-cuda_versions:
   cuda: &cuda_version "12.8.0"
