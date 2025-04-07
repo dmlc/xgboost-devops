@@ -8,16 +8,16 @@ repos:
   - id: check-added-large-files
     args: ["--maxkb=4000"]
 - repo: https://github.com/psf/black
-  rev: 24.10.0
+  rev: 25.1.0
   hooks:
   - id: black
 - repo: https://github.com/pycqa/isort
-  rev: 5.13.2
+  rev: 6.0.1
   hooks:
   - id: isort
     args: ["--profile", "black", "--filter-files"]
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.8.2
+  rev: v0.11.4
   hooks:
     - id: ruff
       args: ["--config", ".ruff.toml"]
