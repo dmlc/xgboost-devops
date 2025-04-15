@@ -63,6 +63,9 @@ xgb-ci.aarch64:
 xgb-ci.manylinux_2_28_x86_64:
   container_def: manylinux_2_28_x86_64
 
+xgb-ci.manylinux_2_28_aarch64:
+  container_def: manylinux_2_28_aarch64
+
 xgb-ci.manylinux2014_x86_64:
   container_def: manylinux2014_x86_64
 
