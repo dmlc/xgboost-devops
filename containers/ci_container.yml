@@ -57,9 +57,6 @@ xgb-ci.clang_tidy:
 xgb-ci.cpu:
   container_def: cpu
 
-xgb-ci.aarch64:
-  container_def: aarch64
-
 xgb-ci.manylinux_2_28_x86_64:
   container_def: manylinux_2_28_x86_64
 
