@@ -17,7 +17,7 @@ repos:
   - id: isort
     args: ["--profile", "black", "--filter-files"]
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.11.7
+  rev: v0.11.8
   hooks:
     - id: ruff
       args: ["--config", ".ruff.toml"]
