@@ -5,7 +5,7 @@ images:
     platform: "linux"
     arch: "x64"
     owner: "492475357299"  # XGBooost CI
-    name: "xgboost-ci-runs-on-linux-*"
+    name: "xgboost-ci-runs-on-linux-amd64-*"
 
 runners:
   linux-amd64-cpu:
