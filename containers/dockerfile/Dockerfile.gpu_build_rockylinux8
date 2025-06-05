@@ -62,7 +62,7 @@ RUN git clone -b branch-${RAPIDS_VERSION} https://github.com/rapidsai/rmm.git --
     { [ ${RAPIDS_VERSION} == '25.06' ] && pushd cpp || true; } && \
     mkdir build && \
     pushd build && \
-    cmake .. -GNinja -DCMAKE_INSTALL_PREFIX=/opt/rmm -DCUDA_STATIC_RUNTIME=ON && \
+    cmake .. -GNinja -DCMAKE_INSTALL_PREFIX=/opt/rmm -DCUDA_STATIC_RUNTIME=ON -DBUILD_SHARED_LIBS=OFF && \
     pushd _deps/cccl-src/ && \
     git fetch origin main && \
     git cherry-pick -n 9fcb32c228865f21f2b002b29d38a06b4c6fbd73 && \
