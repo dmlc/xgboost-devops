@@ -38,6 +38,6 @@ dependencies:
 - protobuf
 - cloudpickle
 - modin
-- pyspark>=3.4.0
+- pyspark>=3.4.0,<4.0
 - pip:
   - datatable
