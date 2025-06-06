@@ -9,7 +9,7 @@ x-rapids_versions:
 
 x-cuda_versions:
   cuda: &cuda_version "12.8.0"
-  nccl: &nccl_version "2.25.1-1"
+  nccl: &nccl_version "2.26.2-1"
 
 xgb-ci.gpu_build_rockylinux8:
   container_def: gpu_build_rockylinux8
