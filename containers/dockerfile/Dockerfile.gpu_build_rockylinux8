@@ -59,7 +59,7 @@ RUN git clone -b v1.65.4 https://github.com/grpc/grpc.git \
 RUN git clone -b branch-${RAPIDS_VERSION} https://github.com/rapidsai/rmm.git --recurse-submodules --depth 1 && \
     pushd rmm && \
     find . -name CMakeLists.txt -print0 | xargs -0 sed -i 's/-Werror//g' && \
-    { [ ${RAPIDS_VERSION} == '25.06' ] && pushd cpp || true; } && \
+    pushd cpp && \
     mkdir build && \
     pushd build && \
     cmake .. -GNinja -DCMAKE_INSTALL_PREFIX=/opt/rmm -DCUDA_STATIC_RUNTIME=ON -DBUILD_SHARED_LIBS=OFF && \
@@ -68,8 +68,7 @@ RUN git clone -b branch-${RAPIDS_VERSION} https://github.com/rapidsai/rmm.git --
     git cherry-pick -n 9fcb32c228865f21f2b002b29d38a06b4c6fbd73 && \
     popd && \
     cmake --build . --target install && \
-    { [ ${RAPIDS_VERSION} == '25.06' ] && popd || true; } && \
-    popd && popd && \
+    popd && popd && popd && \
     rm -rf rmm
 
 # Install lightweight sudo (not bound to TTY)
