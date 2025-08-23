@@ -6,12 +6,17 @@ images:
     arch: "x64"
     owner: "492475357299"  # XGBooost CI
     name: "xgboost-ci-runs-on-linux-amd64-*"
+  new-linux-amd64:
+    platform: "linux"
+    arch: "x64"
+    owner: "492475357299"  # XGBooost CI
+    name: "new-xgboost-ci-runs-on-linux-amd64-*"
 
 runners:
-  linux-amd64-cpu:
+  new-linux-amd64-cpu:
     cpu: 16
     family: ["c7i-flex", "c7i", "c7a", "c5", "c5a"]
-    image: linux-amd64
+    image: new-linux-amd64
   linux-arm64-cpu:
     cpu: 16
     family: ["c6g", "c7g"]
