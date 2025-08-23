@@ -16,6 +16,10 @@ runners:
   new-linux-amd64-cpu:
     cpu: 16
     family: ["c7i-flex", "c7i", "c7a", "c5", "c5a"]
+    image: linux-amd64
+  new-linux-amd64-cpu:
+    cpu: 16
+    family: ["c7i-flex", "c7i", "c7a", "c5", "c5a"]
     image: new-linux-amd64
   linux-arm64-cpu:
     cpu: 16
