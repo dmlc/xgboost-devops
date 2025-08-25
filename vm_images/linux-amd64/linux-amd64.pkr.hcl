@@ -9,7 +9,7 @@ packer {
 
 locals {
   ami_name_prefix = "xgboost-ci"
-  image_name      = "RunsOn worker with Ubuntu 24.04 AMD64 + CUDA driver"
+  image_name      = "RunsOn worker with Ubuntu 24.04 AMD64 + CUDA driver 580"
   region          = "us-west-2"
   timestamp       = regex_replace(timestamp(), "[- TZ:]", "")
   volume_size     = 40
