@@ -55,7 +55,7 @@ jobs:
           - xgb-ci.manylinux_2_28_x86_64
           - xgb-ci.manylinux2014_x86_64
           - xgb-ci.i386
-        runner: [new-linux-amd64-cpu]
+        runner: [linux-amd64-cpu]
         include:
           - image_repo: xgb-ci.manylinux2014_aarch64
             runner: linux-arm64-cpu
