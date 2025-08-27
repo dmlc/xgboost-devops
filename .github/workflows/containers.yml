@@ -49,6 +49,7 @@ jobs:
           - xgb-ci.gpu
           - xgb-ci.gpu_build_r_rockylinux8
           - xgb-ci.gpu_build_rockylinux8
+          - xgb-ci.gpu_build_cuda13_rockylinux8
           - xgb-ci.gpu_build_rockylinux8_dev_ver
           - xgb-ci.jvm
           - xgb-ci.jvm_gpu_build

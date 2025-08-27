@@ -1,0 +1,51 @@
+ARG CUDA_VERSION=notset
+FROM nvcr.io/nvidia/cuda:$CUDA_VERSION-devel-rockylinux8
+ARG CUDA_VERSION
+ARG NCCL_VERSION
+ARG MINIFORGE_VERSION=25.3.1-0
+ARG CMAKE_VERSION=4.1.0
+
+SHELL ["/bin/bash", "-c"]
+
+ENV PATH=/opt/miniforge/bin:/usr/local/ninja:$PATH
+ENV CC=/opt/rh/gcc-toolset-10/root/usr/bin/gcc
+ENV CXX=/opt/rh/gcc-toolset-10/root/usr/bin/c++
+ENV CPP=/opt/rh/gcc-toolset-10/root/usr/bin/cpp
+ENV CUDAHOSTCXX=/opt/rh/gcc-toolset-10/root/usr/bin/c++
+ENV GOSU_VERSION=1.10
+
+# Install all basic requirements
+RUN \
+    curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/D42D0685.pub | sed '/^Version/d' \
+        > /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA && \
+    dnf -y update && \
+    dnf -y install dnf-plugins-core && \
+    dnf config-manager --set-enabled powertools && \
+    dnf install -y tar unzip wget xz git which ninja-build gcc-toolset-10-gcc gcc-toolset-10-binutils gcc-toolset-10-gcc-c++ && \
+    # Miniforge
+    wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-x86_64.sh && \
+    bash conda.sh -b -p /opt/miniforge && \
+    /opt/miniforge/bin/python -m pip install awscli && \
+    # CMake
+    wget -nv -O cmake.sh https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.sh && \
+    bash cmake.sh --skip-license --prefix=/usr
+
+# NCCL2 (License: https://docs.nvidia.com/deeplearning/sdk/nccl-sla/index.html)
+RUN \
+    export NCCL_VERSION=$NCCL_VERSION && \
+    dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/cuda-rhel8.repo && \
+    dnf -y update && \
+    dnf install -y libnccl-${NCCL_VERSION}+cuda13.0 libnccl-devel-${NCCL_VERSION}+cuda13.0 libnccl-static-${NCCL_VERSION}+cuda13.0
+
+# Install lightweight sudo (not bound to TTY)
+RUN set -ex; \
+    wget -nv -nc -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" && \
+    chmod +x /usr/local/bin/gosu && \
+    gosu nobody true
+
+# Default entry-point to use if running locally
+# It will preserve attributes of created files
+COPY entrypoint.sh /scripts/
+
+WORKDIR /workspace
+ENTRYPOINT ["/scripts/entrypoint.sh"]
