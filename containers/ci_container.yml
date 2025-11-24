@@ -5,7 +5,6 @@
 
 x-rapids_versions:
   stable: &rapids_version "25.10"
-  dev: &dev_rapids_version "25.12"
 
 x-cuda_versions:
   cuda: &cuda_version "12.8.0"
@@ -17,13 +16,6 @@ xgb-ci.gpu_build_rockylinux8:
     CUDA_VERSION: *cuda_version
     NCCL_VERSION: *nccl_version
     RAPIDS_VERSION: *rapids_version
-
-xgb-ci.gpu_build_rockylinux8_dev_ver:
-  container_def: gpu_build_rockylinux8
-  build_args:
-    CUDA_VERSION: *cuda_version
-    NCCL_VERSION: *nccl_version
-    RAPIDS_VERSION: *dev_rapids_version
 
 xgb-ci.gpu_build_cuda13_rockylinux8:
   container_def: gpu_build_cuda13_rockylinux8
@@ -46,14 +38,6 @@ xgb-ci.gpu:
     CUDA_VERSION: *cuda_version
     NCCL_VERSION: *nccl_version
     RAPIDS_VERSION: *rapids_version
-
-xgb-ci.gpu_dev_ver:
-  container_def: gpu
-  build_args:
-    CUDA_VERSION: *cuda_version
-    NCCL_VERSION: *nccl_version
-    RAPIDS_VERSION: *dev_rapids_version
-    RAPIDSAI_CONDA_CHANNEL: "rapidsai-nightly"
 
 xgb-ci.clang_tidy:
   container_def: clang_tidy
