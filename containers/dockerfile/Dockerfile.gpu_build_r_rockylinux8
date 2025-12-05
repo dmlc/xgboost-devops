@@ -18,7 +18,7 @@ ENV GOSU_VERSION=1.10
 
 # Install all basic requirements
 RUN \
-    curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/rhel7/x86_64/D42D0685.pub | sed '/^Version/d' \
+    curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/D42D0685.pub | sed '/^Version/d' \
         > /etc/pki/rpm-gpg/RPM-GPG-KEY-NVIDIA && \
     dnf -y update && \
     dnf -y install dnf-plugins-core && \
