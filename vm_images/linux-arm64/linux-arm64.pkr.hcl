@@ -9,7 +9,7 @@ packer {
 
 locals {
   ami_name_prefix = "xgboost-ci"
-  image_name      = "RunsOn worker with Ubuntu 24.04 ARM64"
+  image_name      = "RunsOn worker with Ubuntu 24.04 ARM64 + CUDA driver 580"
   region          = "us-west-2"
   timestamp       = regex_replace(timestamp(), "[- TZ:]", "")
   volume_size     = 40
@@ -33,7 +33,7 @@ source "amazon-ebs" "runs-on-linux-arm64" {
   ami_virtualization_type     = "hvm"
   associate_public_ip_address = true
   communicator                = "ssh"
-  instance_type               = "c6g.4xlarge"
+  instance_type               = "g5g.xlarge"
   region                      = "${local.region}"
   ssh_timeout                 = "10m"
   ssh_username                = "ubuntu"
@@ -63,6 +63,17 @@ build {
   sources = ["source.amazon-ebs.runs-on-linux-arm64"]
 
   provisioner "shell" {
-    script = "bootstrap.sh"
+    script      = "install_drivers.sh"
+    pause_after = "30s"
+  }
+
+  provisioner "shell" {
+    expect_disconnect = true
+    inline            = ["echo 'Reboot VM'", "sudo reboot"]
+  }
+
+  provisioner "shell" {
+    pause_before = "1m0s"
+    script       = "bootstrap.sh"
   }
 }
