@@ -4,7 +4,7 @@ ARG CUDA_VERSION
 ARG RAPIDS_VERSION
   # Should be first 4 digits (e.g. 24.06)
 ARG NCCL_VERSION
-ARG RAPIDSAI_CONDA_CHANNEL="rapidsai"
+ARG ARCH=x86_64
 ARG MINIFORGE_VERSION=24.9.2-0
 ARG PYTHON_VERSION=3.10
 
@@ -17,21 +17,22 @@ ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 
 # Install all basic requirements
 RUN \
+    { [ $ARCH = "aarch64" ] && export CUDA_REPO_ARCH="sbsa" || export CUDA_REPO_ARCH="x86_64"; } && \
     export NCCL_VERSION=$NCCL_VERSION && \
-    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/3bf863cc.pub && \
+    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/${CUDA_REPO_ARCH}/3bf863cc.pub && \
     apt-get update && \
     apt-get install -y wget unzip bzip2 libgomp1 build-essential openjdk-8-jdk-headless && \
     apt-get install "libnccl2=${NCCL_VERSION}+cuda12.9" \
       "libnccl-dev=${NCCL_VERSION}+cuda12.9" -y --allow-change-held-packages && \
     # Miniforge
-    wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-x86_64.sh && \
+    wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-${ARCH}.sh && \
     bash conda.sh -b -p /opt/miniforge
 
 # Create new Conda environment with cuDF, Dask, and cuPy
 RUN \
     export NCCL_SHORT_VER=$(echo "$NCCL_VERSION" | cut -d "-" -f 1) && \
     export CUDA_SHORT_VER=$(echo "$CUDA_VERSION" | grep -o -E '[0-9]+\.[0-9]') && \
-    mamba create -y -n gpu_test -c ${RAPIDSAI_CONDA_CHANNEL} -c conda-forge -c nvidia \
+    mamba create -y -n gpu_test -c rapidsai -c conda-forge -c nvidia \
         python=$PYTHON_VERSION "cudf=$RAPIDS_VERSION.*" "rmm=$RAPIDS_VERSION.*" cuda-version=$CUDA_SHORT_VER \
         "nccl=${NCCL_SHORT_VER}" \
         dask \
@@ -44,7 +45,8 @@ RUN \
 
 # Install lightweight sudo (not bound to TTY)
 RUN set -ex; \
-    wget -nv -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" && \
+    { [ $ARCH = "aarch64" ] && export GOSU_ARCH="arm64" || export GOSU_ARCH="amd64"; } && \
+    wget -nv -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-${GOSU_ARCH}" && \
     chmod +x /usr/local/bin/gosu && \
     gosu nobody true
 
