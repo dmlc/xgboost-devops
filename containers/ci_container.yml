@@ -16,6 +16,15 @@ xgb-ci.gpu_build_rockylinux8:
     CUDA_VERSION: *cuda_version
     NCCL_VERSION: *nccl_version
     RAPIDS_VERSION: *rapids_version
+    ARCH: x86_64
+
+xgb-ci.gpu_build_rockylinux8_aarch64:
+  container_def: gpu_build_rockylinux8
+  build_args:
+    CUDA_VERSION: *cuda_version
+    NCCL_VERSION: *nccl_version
+    RAPIDS_VERSION: *rapids_version
+    ARCH: aarch64
 
 xgb-ci.gpu_build_cuda13_rockylinux8:
   container_def: gpu_build_cuda13_rockylinux8
