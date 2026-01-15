@@ -5,7 +5,7 @@ packer {
       version = "~> 1"
     }
     windows-update = {
-      version = "0.15.0"
+      version = "0.17.1"
       source  = "github.com/rgl/windows-update"
     }
   }
@@ -72,11 +72,6 @@ build {
   sources = ["source.amazon-ebs.runs-on-windows"]
 
   provisioner "windows-update" {}
-
-  provisioner "windows-restart" {
-    restart_check_command = "powershell -command \"& {Write-Output 'restarted.'}\""
-    max_retries           = 3
-  }
 
   provisioner "powershell" {
     script = "install_choco.ps1"
