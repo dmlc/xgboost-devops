@@ -57,18 +57,13 @@ RUN git clone -b v1.65.4 https://github.com/grpc/grpc.git \
 
 # Install RMM
 # Patch out -Werror
-# Patch CCCL 2.5.0 to apply https://github.com/NVIDIA/cccl/pull/1957
-RUN git clone -b branch-${RAPIDS_VERSION} https://github.com/rapidsai/rmm.git --recurse-submodules --depth 1 && \
+RUN git clone -b v${RAPIDS_VERSION}.00 https://github.com/rapidsai/rmm.git --recurse-submodules --depth 1 && \
     pushd rmm && \
     find . -name CMakeLists.txt -print0 | xargs -0 sed -i 's/-Werror//g' && \
     pushd cpp && \
     mkdir build && \
     pushd build && \
-    cmake .. -GNinja -DCMAKE_INSTALL_PREFIX=/opt/rmm -DCUDA_STATIC_RUNTIME=ON -DBUILD_SHARED_LIBS=OFF && \
-    pushd _deps/cccl-src/ && \
-    git fetch origin main && \
-    git cherry-pick -n 9fcb32c228865f21f2b002b29d38a06b4c6fbd73 && \
-    popd && \
+    cmake .. -GNinja -DCMAKE_INSTALL_PREFIX=/opt/rmm -DCUDA_STATIC_RUNTIME=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF && \
     cmake --build . --target install && \
     popd && popd && popd && \
     rm -rf rmm
