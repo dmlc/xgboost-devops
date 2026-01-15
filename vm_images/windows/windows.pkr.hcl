@@ -73,6 +73,11 @@ build {
 
   provisioner "windows-update" {}
 
+  provisioner "windows-restart" {
+    restart_check_command = "powershell -command \"& {Write-Output 'restarted.'}\""
+    max_retries           = 3
+  }
+
   provisioner "powershell" {
     script = "install_choco.ps1"
   }
