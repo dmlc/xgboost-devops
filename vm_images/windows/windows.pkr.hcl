@@ -20,6 +20,7 @@ locals {
 }
 
 data "amazon-ami" "aws-windows-x64" {
+  region = "${local.region}"
   filters = {
     name                = "Windows_Server-2022-English-Full-Base-*"
     root-device-type    = "ebs"
