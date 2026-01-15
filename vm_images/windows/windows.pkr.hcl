@@ -71,7 +71,9 @@ source "amazon-ebs" "runs-on-windows" {
 build {
   sources = ["source.amazon-ebs.runs-on-windows"]
 
-  provisioner "windows-update" {}
+  provisioner "windows-update" {
+    update_limit = 1
+  }
 
   provisioner "powershell" {
     script = "install_choco.ps1"
