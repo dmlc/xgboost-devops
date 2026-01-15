@@ -44,17 +44,17 @@ source "amazon-ebs" "runs-on-windows" {
   ssh_file_transfer_method    = "sftp"
   user_data_file              = "setup_ssh.ps1"
   launch_block_device_mappings {
-    device_name = "/dev/sda1"
-    volume_size = "${local.volume_size}"
-    volume_type = "gp3"
+    device_name           = "/dev/sda1"
+    volume_size           = "${local.volume_size}"
+    volume_type           = "gp3"
     delete_on_termination = true
   }
-  aws_polling {   # Wait up to 2.5 hours until the AMI is ready
+  aws_polling { # Wait up to 2.5 hours until the AMI is ready
     delay_seconds = 15
-    max_attempts = 600
+    max_attempts  = 600
   }
   fast_launch {
-    enable_fast_launch = true
+    enable_fast_launch    = true
     target_resource_count = 10
   }
   snapshot_tags = {
@@ -84,7 +84,7 @@ build {
     script = "bootstrap.ps1"
   }
 
-  provisioner "powershell" {  # Sysprep should run the last
+  provisioner "powershell" { # Sysprep should run the last
     script = "sysprep.ps1"
   }
 }
