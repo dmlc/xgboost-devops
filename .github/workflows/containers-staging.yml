@@ -1,0 +1,18 @@
+name: Build containers (staging)
+
+on:
+  pull_request:
+    paths:
+      - 'containers/**'
+      - '.github/workflows/containers.yml'
+      - '.github/workflows/containers-staging.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  trigger-build:
+    uses: ./.github/workflows/containers.yml
+    with:
+      environment-name: containers-staging
