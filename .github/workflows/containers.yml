@@ -17,6 +17,12 @@ env:
   PUBLISH_CONTAINER: 1
 
 jobs:
+  display-message:
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: |
+          echo "Container job approved to run"
   build-containers:
     name: Build CI containers (${{ matrix.image_repo }})
     runs-on:
@@ -24,6 +30,7 @@ jobs:
       - runner=${{ matrix.runner }}
       - run-id=${{ github.run_id }}
       - tag=build-containers-${{ matrix.image_repo }}
+    needs: display-message
     strategy:
       fail-fast: false
       matrix:
