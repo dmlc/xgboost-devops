@@ -56,7 +56,6 @@ jobs:
             runner: linux-arm64-cpu
           - image_repo: xgb-ci.gpu_aarch64
             runner: linux-arm64-cpu
-    environment: ${{ inputs.environment-name }}
     steps:
       # Restart Docker daemon so that it recognizes the ephemeral disks
       - run: sudo systemctl restart docker
