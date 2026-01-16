@@ -2,24 +2,24 @@
 
 # jq & yq
 Write-Output "Installing jq and yq..."
-choco install jq --version=1.7.1
+choco install jq --version=1.8.1
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
-choco install yq --version=4.40.2
+choco install yq --version=4.50.1
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
 
 # AWS CLI
 Write-Output "Installing AWS CLI..."
-choco install awscli --version=2.18.11
+choco install awscli --version=2.32.34
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
 
 # Git
 Write-Host '>>> Installing Git...'
-choco install git --version=2.47.0
+choco install git --version=2.52.0
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
 
 # CMake
-Write-Host '>>> Installing CMake 3.30.5...'
-choco install cmake --version 3.30.5 --installargs "ADD_CMAKE_TO_PATH=System"
+Write-Host '>>> Installing CMake...'
+choco install cmake --version 4.2.1 --installargs "ADD_CMAKE_TO_PATH=System"
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
 
 # Notepad++
@@ -63,13 +63,13 @@ choco install visualstudio2022-workload-nativedesktop --params `
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
 
 # CUDA 12.5
-Write-Host '>>> Installing CUDA 12.5...'
-choco install cuda --version=12.5.1.555
+Write-Host '>>> Installing CUDA 12.9...'
+choco install cuda --version=12.9.1.576
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
 
 # R 4.3
 Write-Host '>>> Installing R...'
-choco install r.project --version=4.3.2
+choco install r.project --version=4.5.2
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
-choco install rtools --version=4.3.5550
+choco install rtools --version=4.5.6691
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
