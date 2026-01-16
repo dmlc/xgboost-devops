@@ -15,6 +15,7 @@ env:
 jobs:
   display-message:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment-name }}
     steps:
       - shell: bash
         run: |
