@@ -1,0 +1,14 @@
+name: Build containers (staging)
+
+on:
+  pull_request:
+    paths:
+      - 'containers/**'
+      - '.github/workflows/containers.yml'
+      - '.github/workflows/containers-staging.yml'
+
+jobs:
+  trigger-build:
+    uses: ./.github/workflows/containers.yml
+    with:
+      environment-name: containers-staging

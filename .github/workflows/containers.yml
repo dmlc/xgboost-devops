@@ -1,26 +1,11 @@
-name: Build and publish image
+name: Build containers (reusable workflow)
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      upstream_repository:
-        required: false
+      environment-name:
+        required: true
         type: string
-      upstream_job:
-        required: false
-        type: string
-  push:
-    branches:
-      - main
-    paths:
-      - 'containers/**'
-      - '.github/workflows/containers.yml'
-  pull_request:
-    paths:
-      - 'containers/**'
-      - '.github/workflows/containers.yml'
-  schedule:
-    - cron: "0 7 * * 1"  # Run once weekly
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -67,11 +52,8 @@ jobs:
             runner: linux-arm64-cpu
           - image_repo: xgb-ci.gpu_aarch64
             runner: linux-arm64-cpu
+    environment: ${{ inputs.environment-name }}
     steps:
-      - name: Workflow trigger information
-        run: |
-          echo "Triggered by repo ${{ inputs.upstream_repository }}, job ${{ inputs.upstream_job }}"
-        if: inputs.upstream_repository != '' && inputs.upstream_job != ''
       # Restart Docker daemon so that it recognizes the ephemeral disks
       - run: sudo systemctl restart docker
       - uses: actions/checkout@v4
