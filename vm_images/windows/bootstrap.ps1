@@ -17,6 +17,11 @@ Write-Host '>>> Installing Git...'
 choco install git --version=2.52.0
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
 
+# Gzip
+Write-Host '>>> Installing gzip...'
+choco install gzip
+if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
+
 # CMake
 Write-Host '>>> Installing CMake...'
 choco install cmake --version 4.2.1 --installargs "ADD_CMAKE_TO_PATH=System"
