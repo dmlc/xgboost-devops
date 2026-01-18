@@ -1,6 +1,6 @@
 name: Test sccache Action
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build-unix:
