@@ -1,0 +1,69 @@
+name: 'Setup MSVC Developer Environment'
+description: 'Set up MSVC Developer PowerShell environment on Windows'
+author: 'Jiaming Yuan'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup MSVC environment
+      if: runner.os == 'Windows'
+      shell: powershell
+      run: |
+        # Map runner.arch to MSVC arch names
+        $archMap = @{
+          "X64" = "x64"
+          "X86" = "x86"
+          "ARM64" = "arm64"
+          "ARM" = "arm"
+        }
+        $arch = $archMap["${{ runner.arch }}"]
+        if (-not $arch) {
+          Write-Error "Unsupported architecture: ${{ runner.arch }}"
+          exit 1
+        }
+
+        # Host arch can only be x64 or x86
+        $hostArch = if ("${{ runner.arch }}" -eq "X86") { "x86" } else { "x64" }
+
+        Write-Host "Runner arch: ${{ runner.arch }}"
+        Write-Host "MSVC target arch: $arch"
+        Write-Host "MSVC host arch: $hostArch"
+
+        # Validate vswhere exists
+        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+        if (-not (Test-Path $vswhere)) {
+          Write-Error "vswhere.exe not found at: $vswhere"
+          exit 1
+        }
+
+        # Find Visual Studio installation
+        $vsPath = & $vswhere -latest -property installationPath
+        if (-not $vsPath) {
+          Write-Error "No Visual Studio installation found"
+          exit 1
+        }
+        Write-Host "Visual Studio path: $vsPath"
+
+        # Validate DevShell module exists
+        $devShellModule = "$vsPath\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
+        if (-not (Test-Path $devShellModule)) {
+          Write-Error "DevShell module not found at: $devShellModule"
+          exit 1
+        }
+
+        Import-Module $devShellModule
+        Enter-VsDevShell -VsInstallPath $vsPath -SkipAutomaticLocation -DevCmdArguments "-arch=$arch -host_arch=$hostArch"
+
+        # Export only MSVC-related environment variables for subsequent steps
+        $msvcVars = @(
+          "PATH",
+          "INCLUDE",
+          "LIB",
+          "LIBPATH",
+          "Platform"
+        )
+        foreach ($pattern in $msvcVars) {
+          Get-ChildItem env: | Where-Object { $_.Name -like $pattern } | ForEach-Object {
+            "$($_.Name)=$($_.Value)" >> $env:GITHUB_ENV
+          }
+        }

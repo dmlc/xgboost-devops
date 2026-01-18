@@ -1,0 +1,105 @@
+name: Test sccache Action
+
+on: [push]
+
+jobs:
+  build-unix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, macos-14]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.1
+
+      - name: Setup sccache
+        uses: ./actions/sccache
+        with:
+          version: 'v0.13.0-rapids.0'
+
+      - name: Configure CMake
+        run: |
+          cmake -B build -S test \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER_LAUNCHER=sccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Run tests
+        run: ./build/hello_world
+
+      - name: Show sccache stats (mid-build)
+        run: sccache --show-stats
+
+      # Build again to verify cache hits
+      - name: Clean build directory
+        run: rm -rf build
+
+      - name: Configure CMake (second build)
+        run: |
+          cmake -B build -S test \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER_LAUNCHER=sccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+
+      - name: Build (should have cache hits)
+        run: cmake --build build --config Release
+
+      - name: Show sccache stats (post-build)
+        run: sccache --show-stats
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6.0.1
+
+      - name: Setup sccache
+        uses: ./actions/sccache
+        with:
+          version: 'v0.13.0-rapids.0'
+
+      - name: Setup MSVC environment
+        uses: ./actions/msvc-dev-env
+
+      - name: Configure CMake
+        shell: powershell
+        run: |
+          cmake -B build -S test -GNinja `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_C_COMPILER_LAUNCHER=sccache `
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Run tests
+        shell: powershell
+        run: .\build\hello_world
+
+      - name: Show sccache stats (mid-build)
+        run: sccache --show-stats
+
+      # Build again to verify cache hits
+      - name: Clean build directory
+        shell: powershell
+        run: Remove-Item -Recurse -Force build
+
+      - name: Configure CMake (second build)
+        shell: powershell
+        run: |
+          cmake -B build -S test -GNinja `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_C_COMPILER_LAUNCHER=sccache `
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+
+      - name: Build (should have cache hits)
+        run: cmake --build build --config Release
+
+      - name: Show sccache stats (post-build)
+        run: sccache --show-stats

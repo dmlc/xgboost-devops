@@ -1,0 +1,191 @@
+name: 'Setup sccache with GitHub Cache'
+description: 'Set up sccache using the rapidsai fork with GitHub Actions cache backend'
+author: 'Jiaming Yuan'
+
+inputs:
+  version:
+    description: 'Version of sccache to install'
+    required: false
+    default: 'v0.13.0-rapids.0'
+  cache-key-prefix:
+    description: 'Prefix for the cache key'
+    required: false
+    default: ${{ github.job }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Determine platform (Unix)
+      if: runner.os != 'Windows'
+      id: platform-unix
+      shell: bash
+      run: |
+        echo "OS: ${{ runner.os }}"
+        echo "ARCH: ${{ runner.arch }}"
+
+        case "${{ runner.os }}" in
+          Linux)
+            echo "os=unknown-linux-musl" >> $GITHUB_OUTPUT
+            ;;
+          macOS)
+            echo "os=apple-darwin" >> $GITHUB_OUTPUT
+            ;;
+          *)
+            echo "Unsupported OS: ${{ runner.os }}"
+            exit 1
+            ;;
+        esac
+
+        case "${{ runner.arch }}" in
+          X64)
+            echo "arch=x86_64" >> $GITHUB_OUTPUT
+            ;;
+          ARM64)
+            echo "arch=aarch64" >> $GITHUB_OUTPUT
+            ;;
+          *)
+            echo "Unsupported architecture: ${{ runner.arch }}"
+            exit 1
+            ;;
+        esac
+
+    - name: Determine platform (Windows)
+      if: runner.os == 'Windows'
+      id: platform-windows
+      shell: powershell
+      run: |
+        Write-Host "OS: ${{ runner.os }}"
+        Write-Host "ARCH: ${{ runner.arch }}"
+
+        echo "os=pc-windows-msvc" >> $env:GITHUB_OUTPUT
+
+        switch ("${{ runner.arch }}") {
+          "X64" { echo "arch=x86_64" >> $env:GITHUB_OUTPUT }
+          "ARM64" { echo "arch=aarch64" >> $env:GITHUB_OUTPUT }
+          default {
+            Write-Host "Unsupported architecture: ${{ runner.arch }}"
+            exit 1
+          }
+        }
+
+    - name: Download and install sccache (Unix)
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        VERSION="${{ inputs.version }}"
+        ARCH="${{ steps.platform-unix.outputs.arch }}"
+        OS="${{ steps.platform-unix.outputs.os }}"
+
+        # Construct download URL for rapidsai fork
+        FILENAME="sccache-${VERSION}-${ARCH}-${OS}"
+        URL="https://github.com/rapidsai/sccache/releases/download/${VERSION}/${FILENAME}.tar.gz"
+        echo "Downloading sccache from: ${URL}"
+
+        # Create install directory
+        INSTALL_DIR="${HOME}/.local/bin"
+        mkdir -p "${INSTALL_DIR}"
+
+        # Download and extract
+        cd /tmp
+        if command -v curl &> /dev/null; then
+            curl -fsSL -o sccache-archive.tar.gz "${URL}"
+        elif command -v wget &> /dev/null; then
+            wget -nv -O sccache-archive.tar.gz "${URL}"
+        else
+            echo "Error: Neither curl nor wget is installed" >&2
+            exit 1
+        fi
+
+        tar -xzf sccache-archive.tar.gz
+        mv "${FILENAME}/sccache" "${INSTALL_DIR}/"
+        chmod +x "${INSTALL_DIR}/sccache"
+
+        # Add to PATH
+        echo "${INSTALL_DIR}" >> $GITHUB_PATH
+
+        # Verify installation
+        "${INSTALL_DIR}/sccache" --version
+
+    - name: Download and install sccache (Windows)
+      if: runner.os == 'Windows'
+      shell: powershell
+      run: |
+        $VERSION = "${{ inputs.version }}"
+        $ARCH = "${{ steps.platform-windows.outputs.arch }}"
+        $OS = "${{ steps.platform-windows.outputs.os }}"
+
+        # Construct download URL for rapidsai fork
+        $FILENAME = "sccache-${VERSION}-${ARCH}-${OS}"
+        $URL = "https://github.com/rapidsai/sccache/releases/download/${VERSION}/${FILENAME}.zip"
+        Write-Host "Downloading sccache from: $URL"
+
+        # Create install directory
+        $INSTALL_DIR = "$env:USERPROFILE\.local\bin"
+        New-Item -ItemType Directory -Force -Path $INSTALL_DIR | Out-Null
+
+        # Download and extract
+        $TempDir = $env:TEMP
+        $ArchivePath = "$TempDir\sccache-archive.zip"
+        Invoke-WebRequest -Uri $URL -OutFile $ArchivePath
+
+        Expand-Archive -Path $ArchivePath -DestinationPath $TempDir -Force
+        $SccacheExe = "$TempDir\$FILENAME\sccache.exe"
+        Move-Item -Path $SccacheExe -Destination $INSTALL_DIR -Force
+
+        # Add to PATH
+        echo "$INSTALL_DIR" >> $env:GITHUB_PATH
+
+        # Verify installation
+        & "$INSTALL_DIR\sccache.exe" --version
+
+    - name: Configure sccache (Unix)
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        # Set sccache directory
+        SCCACHE_DIR="${HOME}/.cache/sccache"
+        mkdir -p "${SCCACHE_DIR}"
+        echo "SCCACHE_DIR=${SCCACHE_DIR}" >> $GITHUB_ENV
+
+    - name: Configure sccache (Windows)
+      if: runner.os == 'Windows'
+      shell: powershell
+      run: |
+        # Set sccache directory
+        $SCCACHE_DIR = "$env:USERPROFILE\.cache\sccache"
+        New-Item -ItemType Directory -Force -Path $SCCACHE_DIR | Out-Null
+        echo "SCCACHE_DIR=$SCCACHE_DIR" >> $env:GITHUB_ENV
+
+    - name: Restore sccache cache (Unix)
+      if: runner.os != 'Windows'
+      uses: actions/cache@v5.0.1
+      with:
+        path: ~/.cache/sccache
+        key: sccache-${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+        restore-keys: sccache-${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ runner.arch }}-
+
+    - name: Restore sccache cache (Windows)
+      if: runner.os == 'Windows'
+      uses: actions/cache@v5.0.1
+      with:
+        path: ~\.cache\sccache
+        key: sccache-${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+        restore-keys: sccache-${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ runner.arch }}-
+
+    - name: Start sccache server (Unix)
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        sccache --start-server || true
+        echo "::group::sccache initial stats"
+        sccache --show-stats
+        echo "::endgroup::"
+
+    - name: Start sccache server (Windows)
+      if: runner.os == 'Windows'
+      shell: powershell
+      run: |
+        sccache --start-server
+        Write-Host "::group::sccache initial stats"
+        sccache --show-stats
+        Write-Host "::endgroup::"

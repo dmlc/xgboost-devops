@@ -15,7 +15,7 @@ In a workflow file, we'd refer to `dmlc/xgboost-devops/actions/{custom-action}@m
     environment-file: ops/conda_env/cpp_test.yml
 ```
 
-Each custom action consists of two components:
+Some custom actions consist of two components:
 
 * Main script (`dmlc/xgboost-devops/actions/{custom-action}/action.yml`): dispatches to a specific version
   of the implementation script (see the next item). The main script clones `xgboost-devops` from
