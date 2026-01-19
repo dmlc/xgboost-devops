@@ -21,9 +21,7 @@ runs:
           Write-Error "Unsupported architecture: ${{ runner.arch }}"
           exit 1
         }
-
-        # Host arch can only be x64 or x86
-        $hostArch = if ("${{ runner.arch }}" -eq "X86") { "x86" } else { "x64" }
+        $hostArch = $archMap["${{ runner.arch }}"]
 
         Write-Host "Runner arch: ${{ runner.arch }}"
         Write-Host "MSVC target arch: $arch"
