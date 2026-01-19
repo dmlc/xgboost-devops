@@ -53,7 +53,11 @@ jobs:
         run: sccache --show-stats
 
   build-windows:
-    runs-on: [windows-latest, windows-11-arm]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, windows-11-arm]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repository
