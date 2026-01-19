@@ -25,3 +25,26 @@ Some custom actions consist of two components:
 
 This design was inspired by [Mike Sarahan](https://github.com/msarahan)'s work in
 [rapidsai/shared-actions](https://github.com/rapidsai/shared-actions>).
+
+## Sccache
+
+This action uses the rapidsai fork of sccache. It accepts two optional parameters, namely
+`cache-key-prefix` and `version`:
+```yaml
+- uses: dmlc/xgboost-devops/actions/sccache@main
+  with:
+    cache-key-prefix: ${{ github.job }}
+    version: 'v0.13.0-rapids.0'
+```
+
+Internally, it uses the GitHub [cache](https://github.com/actions/cache) action to save
+and restore cached files. Make sure your worker has all the needed dependencies (like
+gzip, tar).
+
+## msvc-dev-env
+
+This action setups the msvc developer powershell:
+```yaml
+- uses: dmlc/xgboost-devops/actions/msvc-dev-env@main
+```
+Only vs2022 has been tested.
