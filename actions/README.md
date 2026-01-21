@@ -15,7 +15,7 @@ In a workflow file, we'd refer to `dmlc/xgboost-devops/actions/{custom-action}@m
     environment-file: ops/conda_env/cpp_test.yml
 ```
 
-Each custom action consists of two components:
+Some custom actions consist of two components:
 
 * Main script (`dmlc/xgboost-devops/actions/{custom-action}/action.yml`): dispatches to a specific version
   of the implementation script (see the next item). The main script clones `xgboost-devops` from
@@ -25,3 +25,26 @@ Each custom action consists of two components:
 
 This design was inspired by [Mike Sarahan](https://github.com/msarahan)'s work in
 [rapidsai/shared-actions](https://github.com/rapidsai/shared-actions>).
+
+## Sccache
+
+This action uses the rapidsai fork of sccache. It accepts two optional parameters, namely
+`cache-key-prefix` and `version`:
+```yaml
+- uses: dmlc/xgboost-devops/actions/sccache@main
+  with:
+    cache-key-prefix: ${{ github.job }}
+    version: 'v0.13.0-rapids.0'
+```
+
+Internally, it uses the GitHub [cache](https://github.com/actions/cache) action to save
+and restore cached files. Make sure your worker has all the needed dependencies (like
+gzip, tar).
+
+## msvc-dev-env
+
+This action setups the msvc developer powershell:
+```yaml
+- uses: dmlc/xgboost-devops/actions/msvc-dev-env@main
+```
+Only vs2022 has been tested.
