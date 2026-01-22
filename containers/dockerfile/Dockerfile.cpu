@@ -36,6 +36,8 @@ RUN git clone -b v1.65.4 https://github.com/grpc/grpc.git \
     popd && \
     rm -rf grpc
 
+RUN mamba install awscli -y	# install awscli into base
+
 # Create new Conda environment
 COPY conda_env/linux_cpu_test.yml /scripts/
 RUN mamba create -n linux_cpu_test && \
