@@ -28,6 +28,8 @@ RUN \
     wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-${ARCH}.sh && \
     bash conda.sh -b -p /opt/miniforge
 
+RUN mamba install awscli -y	# install awscli into base
+
 # Create new Conda environment with cuDF, Dask, and cuPy
 RUN \
     export NCCL_SHORT_VER=$(echo "$NCCL_VERSION" | cut -d "-" -f 1) && \
