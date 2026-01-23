@@ -30,10 +30,11 @@ dependencies:
 - python-kubernetes
 - urllib3
 - jsonschema
-- py-ubjson
 - loky>=3.5.1
 - pyarrow
 - protobuf
 - cloudpickle
 - modin
 - pyspark>=3.4.0,<4.0
+- pip:
+  - py-ubjson
