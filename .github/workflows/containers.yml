@@ -54,6 +54,8 @@ jobs:
             runner: linux-arm64-cpu
           - image_repo: xgb-ci.gpu_build_rockylinux8_aarch64
             runner: linux-arm64-cpu
+          - image_repo: xgb-ci.cpu_aarch64
+            runner: linux-arm64-cpu
           - image_repo: xgb-ci.gpu_aarch64
             runner: linux-arm64-cpu
     steps:
