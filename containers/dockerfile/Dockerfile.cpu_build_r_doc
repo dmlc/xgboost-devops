@@ -13,6 +13,10 @@ RUN \
     apt-get update && \
     apt-get install -y --no-install-recommends r-base
 
+RUN apt-get install git python3-pip -y
+
+RUN pip install awscli --break-system-packages && aws --version
+
 RUN \
     apt-get install \
         make cmake g++ gcc \
