@@ -39,7 +39,7 @@ RUN \
     export NCCL_VERSION=$NCCL_VERSION && \
     dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${CUDA_REPO_ARCH}/cuda-rhel8.repo && \
     dnf -y update && \
-    dnf install -y libnccl-${NCCL_VERSION}+cuda${CUDA_SHORT} libnccl-devel-${NCCL_VERSION}+cuda${CUDA_SHORT} libnccl-static-${NCCL_VERSION}+cuda${CUDA_SHORT}
+    dnf install -y libnccl-${NCCL_VERSION}+cuda13.1 libnccl-devel-${NCCL_VERSION}+cuda13.1 libnccl-static-${NCCL_VERSION}+cuda13.1
 
 # Install lightweight sudo (not bound to TTY)
 RUN set -ex; \
