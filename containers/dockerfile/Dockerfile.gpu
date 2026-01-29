@@ -18,13 +18,14 @@ ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 # Install all basic requirements
 RUN \
     { [ $ARCH = "aarch64" ] && export CUDA_REPO_ARCH="sbsa" || export CUDA_REPO_ARCH="x86_64"; } && \
+    export CUDA_SHORT=`echo $CUDA_VERSION | grep -o -E '[0-9]+\.[0-9]'` && \
     export NCCL_VERSION=$NCCL_VERSION && \
     sed -i 's/ports.ubuntu.com/mirrors.ocf.berkeley.edu/g' /etc/apt/sources.list && \
     apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/${CUDA_REPO_ARCH}/3bf863cc.pub && \
     apt-get update && \
     apt-get install -y wget unzip bzip2 libgomp1 build-essential openjdk-8-jdk-headless && \
-    apt-get install "libnccl2=${NCCL_VERSION}+cuda12.9" \
-      "libnccl-dev=${NCCL_VERSION}+cuda12.9" -y --allow-change-held-packages && \
+    apt-get install "libnccl2=${NCCL_VERSION}+cuda${CUDA_SHORT}" \
+      "libnccl-dev=${NCCL_VERSION}+cuda${CUDA_SHORT}" -y --allow-change-held-packages && \
     # Miniforge
     wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-${ARCH}.sh && \
     bash conda.sh -b -p /opt/miniforge

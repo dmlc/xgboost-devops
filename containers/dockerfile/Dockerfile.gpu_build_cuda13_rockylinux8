@@ -35,10 +35,11 @@ RUN \
 # NCCL2 (License: https://docs.nvidia.com/deeplearning/sdk/nccl-sla/index.html)
 RUN \
     { [ $ARCH = "aarch64" ] && export CUDA_REPO_ARCH="sbsa" || export CUDA_REPO_ARCH="x86_64"; } && \
+    export CUDA_SHORT=`echo $CUDA_VERSION | grep -o -E '[0-9]+\.[0-9]'` && \
     export NCCL_VERSION=$NCCL_VERSION && \
     dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${CUDA_REPO_ARCH}/cuda-rhel8.repo && \
     dnf -y update && \
-    dnf install -y libnccl-${NCCL_VERSION}+cuda13.0 libnccl-devel-${NCCL_VERSION}+cuda13.0 libnccl-static-${NCCL_VERSION}+cuda13.0
+    dnf install -y libnccl-${NCCL_VERSION}+cuda${CUDA_SHORT} libnccl-devel-${NCCL_VERSION}+cuda${CUDA_SHORT} libnccl-static-${NCCL_VERSION}+cuda${CUDA_SHORT}
 
 # Install lightweight sudo (not bound to TTY)
 RUN set -ex; \
