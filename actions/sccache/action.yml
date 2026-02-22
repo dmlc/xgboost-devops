@@ -6,7 +6,7 @@ inputs:
   version:
     description: 'Version of sccache to install'
     required: false
-    default: 'v0.13.0-rapids.0'
+    default: 'v0.13.0-rapids.11'
   cache-key-prefix:
     description: 'Prefix for the cache key'
     required: false
