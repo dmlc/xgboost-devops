@@ -35,6 +35,6 @@ dependencies:
 - protobuf
 - cloudpickle
 - modin
-- pyspark>=3.4.0,<4.0
+- pyspark>=4.0
 - pip:
   - py-ubjson
