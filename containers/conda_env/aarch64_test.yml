@@ -28,6 +28,7 @@ dependencies:
 - loky>=3.5.1
 - pyarrow
 - pyspark>=4.0
+- grpcio  # used by spark connect
 - cloudpickle
 - pip:
   - awscli

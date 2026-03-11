@@ -36,5 +36,6 @@ dependencies:
 - cloudpickle
 - modin
 - pyspark>=4.0
+- grpcio  # used by spark connect
 - pip:
   - py-ubjson
