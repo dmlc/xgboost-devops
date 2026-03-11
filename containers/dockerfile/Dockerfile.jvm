@@ -1,7 +1,7 @@
 FROM rockylinux:8
 ARG MINIFORGE_VERSION=24.9.2-0
 ARG CMAKE_VERSION=3.31.2
-ARG MAVEN_VERSION=3.9.12
+ARG MAVEN_VERSION=3.9.13
 
 SHELL ["/bin/bash", "-c"]
 
@@ -15,7 +15,7 @@ ENV GOSU_VERSION=1.10
 RUN dnf -y update && \
     dnf -y install dnf-plugins-core && \
     dnf config-manager --set-enabled powertools && \
-    dnf install -y tar unzip make bzip2 wget xz git which ninja-build java-1.8.0-openjdk-devel \
+    dnf install -y tar unzip make bzip2 wget xz git which ninja-build java-17-openjdk-devel \
                    gcc-toolset-10-gcc gcc-toolset-10-binutils gcc-toolset-10-gcc-c++ \
                    gcc-toolset-10-runtime gcc-toolset-10-libstdc++-devel && \
     # Miniforge

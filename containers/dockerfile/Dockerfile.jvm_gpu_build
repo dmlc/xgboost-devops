@@ -4,7 +4,7 @@ ARG CUDA_VERSION
 ARG NCCL_VERSION
 ARG MINIFORGE_VERSION=24.9.2-0
 ARG CMAKE_VERSION=3.31.2
-ARG MAVEN_VERSION=3.9.12
+ARG MAVEN_VERSION=3.9.13
 
 SHELL ["/bin/bash", "-c"]
 
@@ -21,7 +21,7 @@ RUN \
     dnf -y update && \
     dnf -y install dnf-plugins-core && \
     dnf config-manager --set-enabled powertools && \
-    dnf install -y tar unzip wget xz git which ninja-build java-1.8.0-openjdk-devel gcc-toolset-10-gcc gcc-toolset-10-binutils gcc-toolset-10-gcc-c++ && \
+    dnf install -y tar unzip wget xz git which ninja-build java-17-openjdk-devel gcc-toolset-10-gcc gcc-toolset-10-binutils gcc-toolset-10-gcc-c++ && \
     # Miniforge
     wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-x86_64.sh && \
     bash conda.sh -b -p /opt/miniforge && \
