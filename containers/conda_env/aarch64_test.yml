@@ -29,6 +29,7 @@ dependencies:
 - pyarrow
 - pyspark>=4.0
 - grpcio  # used by spark connect
+- grpcio-status
 - cloudpickle
 - pip:
   - awscli

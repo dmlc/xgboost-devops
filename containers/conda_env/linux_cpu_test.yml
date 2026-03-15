@@ -37,5 +37,6 @@ dependencies:
 - modin
 - pyspark>=4.0
 - grpcio  # used by spark connect
+- grpcio-status
 - pip:
   - py-ubjson
