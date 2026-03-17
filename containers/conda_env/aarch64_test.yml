@@ -27,9 +27,12 @@ dependencies:
 - llvmlite
 - loky>=3.5.1
 - pyarrow
+# PySpark
 - pyspark>=4.0
-- grpcio  # used by spark connect
+- grpcio
 - grpcio-status
+- googleapis-common-protos
+- zstandard
 - cloudpickle
 - pip:
   - awscli

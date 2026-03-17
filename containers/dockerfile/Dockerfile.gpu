@@ -43,8 +43,8 @@ RUN \
         distributed \
         "dask-cuda=$RAPIDS_VERSION.*" "dask-cudf=$RAPIDS_VERSION.*" cupy \
         numpy pytest pytest-timeout scipy scikit-learn pandas matplotlib wheel \
-        python-kubernetes urllib3 graphviz hypothesis "loky>=3.5.1" \
-        "pyspark>=4.0" grpcio grpcio-status cloudpickle cuda-python && \
+        python-kubernetes urllib3 graphviz hypothesis "loky>=3.5.1" cuda-python \
+        "pyspark>=4.0" grpcio grpcio-status googleapis-common-protos zstandard cloudpickle && \
     mamba clean --all --yes
 
 # Install lightweight sudo (not bound to TTY)

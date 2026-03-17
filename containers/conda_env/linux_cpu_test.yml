@@ -35,8 +35,11 @@ dependencies:
 - protobuf
 - cloudpickle
 - modin
+# PySpark
 - pyspark>=4.0
-- grpcio  # used by spark connect
+- grpcio
 - grpcio-status
+- googleapis-common-protos
+- zstandard
 - pip:
   - py-ubjson
