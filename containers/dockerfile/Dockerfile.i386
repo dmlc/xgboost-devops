@@ -5,8 +5,8 @@ SHELL ["/bin/bash", "-c"]
 ENV DEBIAN_FRONTEND=noninteractive
 ENV GOSU_VERSION=1.10
 
-RUN apt-get update && \
-    apt-get install -y tar unzip wget git build-essential ninja-build cmake curl
+RUN apt-get update && apt-get upgrade -y  && \
+    apt-get install -y tar unzip wget git build-essential ninja-build cmake curl ca-certificates
 
 # Install lightweight sudo (not bound to TTY)
 RUN set -ex; \
