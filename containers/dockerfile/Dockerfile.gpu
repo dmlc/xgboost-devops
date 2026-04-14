@@ -54,6 +54,10 @@ RUN set -ex; \
     chmod +x /usr/local/bin/gosu && \
     gosu nobody true
 
+RUN \
+    source activate gpu_test && \
+    python -c 'from cupy.cuda import jitify; jitify._init_module()'
+
 # Default entry-point to use if running locally
 # It will preserve attributes of created files
 COPY entrypoint.sh /scripts/
