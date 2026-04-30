@@ -29,8 +29,7 @@ on:
         required: true
 
 permissions:
-  pull-requests: write
-  contents: write
+  contents: read
 
 defaults:
   run:
@@ -44,17 +43,18 @@ jobs:
     name: Run dependency updater
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/create-github-app-token@v1
-        id: generate-token
-        with:
-          app-id: ${{ secrets.TOKEN_GENERATOR_APP_ID }}
-          private-key: ${{ secrets.TOKEN_GENERATOR_APP_PRIVATE_KEY }}
       - uses: actions/checkout@v4
         with:
           submodules: ${{ inputs.checkout-submodules }}
       - name: Run updater
         run: |
           bash "${{ inputs.update-script }}"
+      - uses: actions/create-github-app-token@v1
+        id: generate-token
+        if: github.ref == 'refs/heads/main'
+        with:
+          app-id: ${{ secrets.TOKEN_GENERATOR_APP_ID }}
+          private-key: ${{ secrets.TOKEN_GENERATOR_APP_PRIVATE_KEY }}
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         if: github.ref == 'refs/heads/main'

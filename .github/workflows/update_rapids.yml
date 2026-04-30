@@ -6,8 +6,7 @@ on:
     - cron: "0 20 * * 1"  # Run once weekly
 
 permissions:
-  pull-requests: write
-  contents: write
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
