@@ -1,4 +1,4 @@
-name: update-rapids
+name: update-sccache
 
 on:
   workflow_dispatch:
@@ -14,15 +14,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  update-rapids:
-    name: Check latest RAPIDS
+  update-sccache:
+    name: Check latest sccache
     uses: ./.github/workflows/update_dependency.yml
     with:
-      update-script: containers/update_rapids.sh
+      update-script: actions/update_sccache.sh
       add-paths: |
-        containers
-      branch: create-pull-request/update-rapids
-      title: "[CI] Update RAPIDS to latest stable"
-      commit-message: "[CI] Update RAPIDS to latest stable"
-      checkout-submodules: true
+        actions/sccache/action.yml
+      branch: create-pull-request/update-sccache
+      title: "[CI] Update sccache to latest RAPIDS release"
+      commit-message: "[CI] Update sccache to latest RAPIDS release"
     secrets: inherit

@@ -1,0 +1,67 @@
+name: update-dependency
+
+on:
+  workflow_call:
+    inputs:
+      update-script:
+        required: true
+        type: string
+      add-paths:
+        required: true
+        type: string
+      branch:
+        required: true
+        type: string
+      title:
+        required: true
+        type: string
+      commit-message:
+        required: true
+        type: string
+      checkout-submodules:
+        required: false
+        type: boolean
+        default: false
+    secrets:
+      TOKEN_GENERATOR_APP_ID:
+        required: true
+      TOKEN_GENERATOR_APP_PRIVATE_KEY:
+        required: true
+
+permissions:
+  pull-requests: write
+  contents: write
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+env:
+  GITHUB_TOKEN: ${{ github.token }}  # To use GitHub CLI
+
+jobs:
+  update-dependency:
+    name: Run dependency updater
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: generate-token
+        with:
+          app-id: ${{ secrets.TOKEN_GENERATOR_APP_ID }}
+          private-key: ${{ secrets.TOKEN_GENERATOR_APP_PRIVATE_KEY }}
+      - uses: actions/checkout@v4
+        with:
+          submodules: ${{ inputs.checkout-submodules }}
+      - name: Run updater
+        run: |
+          bash "${{ inputs.update-script }}"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        if: github.ref == 'refs/heads/main'
+        with:
+          add-paths: ${{ inputs.add-paths }}
+          branch: ${{ inputs.branch }}
+          base: main
+          title: ${{ inputs.title }}
+          commit-message: ${{ inputs.commit-message }}
+          token: ${{ steps.generate-token.outputs.token }}
