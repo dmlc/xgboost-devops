@@ -28,8 +28,9 @@ This design was inspired by [Mike Sarahan](https://github.com/msarahan)'s work i
 
 ## Sccache
 
-This action uses the rapidsai fork of sccache. It accepts two optional parameters, namely
-`cache-key-prefix` and `version`:
+This action uses the rapidsai [fork](https://github.com/rapidsai/sccache) of sccache. It
+accepts two optional parameters, namely `cache-key-prefix` and `version`:
+
 ```yaml
 - uses: dmlc/xgboost-devops/actions/sccache@main
   with:
