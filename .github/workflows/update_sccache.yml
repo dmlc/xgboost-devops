@@ -22,6 +22,6 @@ jobs:
       add-paths: |
         actions/sccache/action.yml
       branch: create-pull-request/update-sccache
-      title: "[CI] Update sccache to latest RAPIDS release"
-      commit-message: "[CI] Update sccache to latest RAPIDS release"
+      title: "[CI] Update sccache to latest release"
+      commit-message: "[CI] Update sccache to latest release"
     secrets: inherit

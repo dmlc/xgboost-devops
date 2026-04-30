@@ -6,6 +6,7 @@ LATEST_SCCACHE_VERSION=$(
   gh release list \
     --repo rapidsai/sccache \
     --exclude-drafts \
+    --exclude-pre-releases \
     --limit 100 \
     --json tagName \
     --jq '[.[].tagName | select(test("^v[0-9]+\\.[0-9]+\\.[0-9]+-rapids\\.[0-9]+$"))][0]'
