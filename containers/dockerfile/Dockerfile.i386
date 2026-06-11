@@ -5,14 +5,13 @@ SHELL ["/bin/bash", "-c"]
 ENV DEBIAN_FRONTEND=noninteractive
 ENV GOSU_VERSION=1.10
 
+COPY scripts/install_gosu.sh /scripts/
+
 RUN apt-get update && apt-get upgrade -y  && \
     apt-get install -y tar unzip wget git build-essential ninja-build cmake curl ca-certificates
 
 # Install lightweight sudo (not bound to TTY)
-RUN set -ex; \
-    curl -o /usr/local/bin/gosu -L "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-i386" && \
-    chmod +x /usr/local/bin/gosu && \
-    gosu nobody true
+RUN sh /scripts/install_gosu.sh
 
 # Default entry-point to use if running locally
 # It will preserve attributes of created files
