@@ -4,13 +4,12 @@ SHELL ["/bin/bash", "-c"]
 
 ENV GOSU_VERSION=1.10
 
+COPY scripts/install_gosu.sh /scripts/
+
 RUN yum update -y && yum install -y java-1.8.0-openjdk-devel
 
 # Install lightweight sudo (not bound to TTY)
-RUN set -ex; \
-    curl -o /usr/local/bin/gosu -L "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-arm64" && \
-    chmod +x /usr/local/bin/gosu && \
-    gosu nobody true
+RUN sh /scripts/install_gosu.sh
 
 # Default entry-point to use if running locally
 # It will preserve attributes of created files
