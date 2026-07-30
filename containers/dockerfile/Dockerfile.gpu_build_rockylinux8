@@ -41,13 +41,17 @@ RUN \
 
 # Install RMM
 # Patch out -Werror
+# Force the static logger dependencies to use the container's GCC toolchain instead of
+# reusing ABI-incompatible shared libraries from Miniforge.
 RUN git clone -b v${RAPIDS_VERSION}.00 https://github.com/rapidsai/rmm.git --recurse-submodules --depth 1 && \
     pushd rmm && \
     find . -name CMakeLists.txt -print0 | xargs -0 sed -i 's/-Werror//g' && \
     pushd cpp && \
     mkdir build && \
     pushd build && \
-    cmake .. -GNinja -DCMAKE_INSTALL_PREFIX=/opt/rmm -DCUDA_STATIC_RUNTIME=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF && \
+    cmake .. -GNinja -DCMAKE_INSTALL_PREFIX=/opt/rmm -DCUDA_STATIC_RUNTIME=ON \
+      -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF \
+      -DCPM_DOWNLOAD_fmt=ON -DCPM_DOWNLOAD_spdlog=ON && \
     cmake --build . --target install && \
     popd && popd && popd && \
     rm -rf rmm

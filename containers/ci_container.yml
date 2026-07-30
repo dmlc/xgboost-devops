@@ -27,7 +27,7 @@ xgb-ci.gpu_build_rockylinux8_aarch64:
     RAPIDS_VERSION: *rapids_version
     ARCH: aarch64
 
-# CUDA 12 is used only to build the xgboost-cu12 PyPI package.
+# CUDA 12 builders are used only for the xgboost-cu12 PyPI package.
 xgb-ci.gpu_build_cuda12_rockylinux8:
   container_def: gpu_build_cuda12_rockylinux8
   build_args:
@@ -70,7 +70,7 @@ xgb-ci.gpu_aarch64:
 xgb-ci.clang_tidy:
   container_def: clang_tidy
   build_args:
-    CUDA_VERSION: *cuda_version
+    CUDA_VERSION: *cuda12_version
 
 xgb-ci.cpu:
   container_def: cpu
