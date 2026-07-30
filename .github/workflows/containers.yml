@@ -32,7 +32,6 @@ jobs:
       fail-fast: false
       matrix:
         image_repo:
-          - xgb-ci.clang_tidy
           - xgb-ci.cpu
           - xgb-ci.cpu_build_r_doc
           - xgb-ci.gpu
