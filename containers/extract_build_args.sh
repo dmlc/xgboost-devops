@@ -5,7 +5,7 @@
 ## Example input:
 ##   xgb-ci.clang_tidy
 ## Example output:
-##   CONTAINER_DEF='clang_tidy' BUILD_ARGS='--build-arg CUDA_VERSION_ARG=12.4.1'
+##   CONTAINER_DEF='clang_tidy' BUILD_ARGS='--build-arg CUDA_VERSION=13.3.0'
 
 if [ "$#" -ne 1 ]; then
     echo "Usage: $0 [image_repo]"
