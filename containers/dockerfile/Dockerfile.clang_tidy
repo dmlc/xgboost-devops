@@ -16,16 +16,16 @@ RUN \
 
 # Install clang-tidy: https://apt.llvm.org/
 RUN \
-    apt-add-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-19 main" && \
+    apt-add-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-21 main" && \
     wget -O llvm-snapshot.gpg.key https://apt.llvm.org/llvm-snapshot.gpg.key && \
     apt-key add ./llvm-snapshot.gpg.key && \
     rm llvm-snapshot.gpg.key && \
     apt-get update && \
-    apt-get install -y clang-tidy-19 clang-19 libomp-19-dev
+    apt-get install -y clang-tidy-21 clang-21 libomp-21-dev
 
 # Set default clang-tidy version
-RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-19 100 && \
-    update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 100
+RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-21 100 && \
+    update-alternatives --install /usr/bin/clang clang /usr/bin/clang-21 100
 
 # Install Python packages
 RUN pip3 install cmake

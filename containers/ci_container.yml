@@ -8,7 +8,7 @@ x-rapids_versions:
 
 x-cuda_versions:
   cuda: &cuda_version "12.9.0"
-  nccl: &nccl_version "2.29.2-1"
+  nccl: &nccl_version "2.30.7-1"
 
 xgb-ci.gpu_build_rockylinux8:
   container_def: gpu_build_rockylinux8
@@ -29,14 +29,14 @@ xgb-ci.gpu_build_rockylinux8_aarch64:
 xgb-ci.gpu_build_cuda13_rockylinux8:
   container_def: gpu_build_cuda13_rockylinux8
   build_args:
-    CUDA_VERSION: "13.0.0"
+    CUDA_VERSION: "13.3.0"
     NCCL_VERSION: *nccl_version
     ARCH: x86_64
 
 xgb-ci.gpu_build_cuda13_rockylinux8_aarch64:
   container_def: gpu_build_cuda13_rockylinux8
   build_args:
-    CUDA_VERSION: "13.0.0"
+    CUDA_VERSION: "13.3.0"
     NCCL_VERSION: *nccl_version
     ARCH: aarch64
 

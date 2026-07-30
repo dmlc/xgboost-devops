@@ -27,19 +27,21 @@ dependencies:
 - pytest
 - pytest-timeout
 - pytest-cov
-- python-kubernetes
 - urllib3
 - jsonschema
 - loky>=3.5.1
 - pyarrow
+# Federated learning
+- libgrpc
 - protobuf
-- cloudpickle
-- modin
 # PySpark
+- cloudpickle
 - pyspark>=4.0
 - grpcio
 - grpcio-status
 - googleapis-common-protos
 - zstandard
+# misc
+- modin
 - pip:
   - py-ubjson

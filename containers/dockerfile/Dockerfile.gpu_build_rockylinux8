@@ -4,7 +4,7 @@ ARG CUDA_VERSION
 ARG NCCL_VERSION
 ARG RAPIDS_VERSION
 ARG ARCH=x86_64
-ARG MINIFORGE_VERSION=24.9.2-0
+ARG MINIFORGE_VERSION=26.3.2-3
 ARG CMAKE_VERSION=3.31.2
 
 SHELL ["/bin/bash", "-c"]
@@ -38,20 +38,6 @@ RUN \
     dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${CUDA_REPO_ARCH}/cuda-rhel8.repo && \
     dnf -y update && \
     dnf install -y libnccl-${NCCL_VERSION}+cuda${CUDA_SHORT} libnccl-devel-${NCCL_VERSION}+cuda${CUDA_SHORT}
-
-# Install gRPC
-# Patch Abseil to apply https://github.com/abseil/abseil-cpp/issues/1629
-RUN git clone -b v1.65.4 https://github.com/grpc/grpc.git \
-      --recurse-submodules --depth 1 && \
-    pushd grpc && \
-    pushd third_party/abseil-cpp && \
-    git fetch origin master && \
-    git cherry-pick -n cfde5f74e276049727f9556f13473a59fe77d9eb && \
-    popd && \
-    cmake -S . -B build -GNinja -DCMAKE_INSTALL_PREFIX=/opt/grpc -DCMAKE_CXX_VISIBILITY_PRESET=hidden && \
-    cmake --build build --target install && \
-    popd && \
-    rm -rf grpc
 
 # Install RMM
 # Patch out -Werror
