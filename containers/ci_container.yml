@@ -67,6 +67,23 @@ xgb-ci.gpu_aarch64:
     RAPIDS_VERSION: *rapids_version
     ARCH: aarch64
 
+# CUDA 12 runtime images provide native test environments for xgboost-cu12.
+xgb-ci.gpu_cuda12:
+  container_def: gpu
+  build_args:
+    CUDA_VERSION: *cuda12_version
+    NCCL_VERSION: *nccl_version
+    RAPIDS_VERSION: *rapids_version
+    ARCH: x86_64
+
+xgb-ci.gpu_cuda12_aarch64:
+  container_def: gpu
+  build_args:
+    CUDA_VERSION: *cuda12_version
+    NCCL_VERSION: *nccl_version
+    RAPIDS_VERSION: *rapids_version
+    ARCH: aarch64
+
 xgb-ci.cpu:
   container_def: cpu
   build_args:
