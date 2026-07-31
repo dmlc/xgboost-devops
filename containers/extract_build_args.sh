@@ -3,9 +3,9 @@
 ## given the image repo.
 ##
 ## Example input:
-##   xgb-ci.clang_tidy
+##   xgb-ci.cpu
 ## Example output:
-##   CONTAINER_DEF='clang_tidy' BUILD_ARGS='--build-arg CUDA_VERSION_ARG=12.4.1'
+##   CONTAINER_DEF='cpu' BUILD_ARGS='--build-arg ARCH=x86_64'
 
 if [ "$#" -ne 1 ]; then
     echo "Usage: $0 [image_repo]"

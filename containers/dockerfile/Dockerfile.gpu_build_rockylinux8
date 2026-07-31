@@ -4,8 +4,8 @@ ARG CUDA_VERSION
 ARG NCCL_VERSION
 ARG RAPIDS_VERSION
 ARG ARCH=x86_64
-ARG MINIFORGE_VERSION=24.9.2-0
-ARG CMAKE_VERSION=3.31.2
+ARG MINIFORGE_VERSION=26.3.2-3
+ARG CMAKE_VERSION=4.1.0
 
 SHELL ["/bin/bash", "-c"]
 
@@ -39,29 +39,19 @@ RUN \
     dnf -y update && \
     dnf install -y libnccl-${NCCL_VERSION}+cuda${CUDA_SHORT} libnccl-devel-${NCCL_VERSION}+cuda${CUDA_SHORT}
 
-# Install gRPC
-# Patch Abseil to apply https://github.com/abseil/abseil-cpp/issues/1629
-RUN git clone -b v1.65.4 https://github.com/grpc/grpc.git \
-      --recurse-submodules --depth 1 && \
-    pushd grpc && \
-    pushd third_party/abseil-cpp && \
-    git fetch origin master && \
-    git cherry-pick -n cfde5f74e276049727f9556f13473a59fe77d9eb && \
-    popd && \
-    cmake -S . -B build -GNinja -DCMAKE_INSTALL_PREFIX=/opt/grpc -DCMAKE_CXX_VISIBILITY_PRESET=hidden && \
-    cmake --build build --target install && \
-    popd && \
-    rm -rf grpc
-
 # Install RMM
 # Patch out -Werror
+# Force the static logger dependencies to use the container's GCC toolchain instead of
+# reusing ABI-incompatible shared libraries from Miniforge.
 RUN git clone -b v${RAPIDS_VERSION}.00 https://github.com/rapidsai/rmm.git --recurse-submodules --depth 1 && \
     pushd rmm && \
     find . -name CMakeLists.txt -print0 | xargs -0 sed -i 's/-Werror//g' && \
     pushd cpp && \
     mkdir build && \
     pushd build && \
-    cmake .. -GNinja -DCMAKE_INSTALL_PREFIX=/opt/rmm -DCUDA_STATIC_RUNTIME=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF && \
+    cmake .. -GNinja -DCMAKE_INSTALL_PREFIX=/opt/rmm -DCUDA_STATIC_RUNTIME=ON \
+      -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTS=OFF \
+      -DCPM_DOWNLOAD_fmt=ON -DCPM_DOWNLOAD_spdlog=ON && \
     cmake --build . --target install && \
     popd && popd && popd && \
     rm -rf rmm
