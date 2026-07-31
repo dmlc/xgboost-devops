@@ -31,6 +31,7 @@ dependencies:
 - jsonschema
 - loky>=3.5.1
 - pyarrow
+- polars
 # PySpark
 - cloudpickle
 - pyspark>=4.0
