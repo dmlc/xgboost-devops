@@ -39,7 +39,9 @@ dependencies:
 - grpcio-status
 - googleapis-common-protos
 - zstandard
-# misc
-- modin
+# The modin on conda forge is old at the time of writing (0.32.0). Old modin constraints
+# the numpy version to <2. Pulling it from PyPI is not safe with its large dependency
+# tree. Just disable it on the CPU CI for now.
+# - modin
 - pip:
   - py-ubjson
