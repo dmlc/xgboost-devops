@@ -72,9 +72,9 @@ Write-Host '>>> Installing CUDA 13.3...'
 choco install cuda --version=13.3.0
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
 
-# R 4.3
+# R 4.5
 Write-Host '>>> Installing R...'
-choco install r.project --version=4.5.2
+choco install r.project --version=4.5.3
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
-choco install rtools --version=4.5.6691
+choco install rtools --version=4.5.6768
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
