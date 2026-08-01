@@ -71,7 +71,8 @@ source "amazon-ebs" "runs-on-windows" {
 build {
   sources = ["source.amazon-ebs.runs-on-windows"]
 
-  provisioner "windows-update" {}
+  # Failed to install KB5073457
+  # provisioner "windows-update" {}
 
   provisioner "powershell" {
     script = "install_choco.ps1"
