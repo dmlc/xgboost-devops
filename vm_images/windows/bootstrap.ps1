@@ -67,9 +67,9 @@ choco install visualstudio2022-workload-nativedesktop --params `
     "--wait --passive --norestart --includeOptional"
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
 
-# CUDA 12.5
-Write-Host '>>> Installing CUDA 12.9...'
-choco install cuda --version=12.9.1.576
+# CUDA 13.3
+Write-Host '>>> Installing CUDA 13.3...'
+choco install cuda --version=13.3.0
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
 
 # R 4.3
