@@ -57,24 +57,3 @@ if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
 Write-Host '>>> Installing GraphViz...'
 choco install graphviz
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
-
-# Visual Studio 2022 Community
-Write-Host '>>> Installing Visual Studio 2022 Community...'
-choco install visualstudio2022community `
-    --params "--wait --passive --norestart"
-if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
-choco install visualstudio2022-workload-nativedesktop --params `
-    "--wait --passive --norestart --includeOptional"
-if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
-
-# CUDA 13.3
-Write-Host '>>> Installing CUDA 13.3...'
-choco install cuda --version=13.3.0
-if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
-
-# R 4.5
-Write-Host '>>> Installing R...'
-choco install r.project --version=4.5.3
-if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
-choco install rtools --version=4.5.6768
-if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
