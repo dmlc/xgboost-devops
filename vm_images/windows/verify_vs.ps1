@@ -7,7 +7,7 @@ if (-not (Test-Path $vswhere)) {
 
 $installationPath = & $vswhere `
     -latest `
-    -products * `
+    -products '*' `
     -requires Microsoft.VisualStudio.Workload.NativeDesktop `
     -property installationPath
 if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($installationPath)) {
@@ -16,7 +16,7 @@ if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($installationPath)) {
 
 $displayVersion = & $vswhere `
     -latest `
-    -products * `
+    -products '*' `
     -property catalog_productDisplayVersion
 if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($displayVersion)) {
     throw "Unable to determine the installed Visual Studio version"
