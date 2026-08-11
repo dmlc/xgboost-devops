@@ -42,12 +42,9 @@ jobs:
           - xgb-ci.jvm
           - xgb-ci.jvm_gpu_build
           - xgb-ci.manylinux_2_28_x86_64
-          - xgb-ci.manylinux2014_x86_64
           - xgb-ci.i386
         runner: [linux-amd64-cpu]
         include:
-          - image_repo: xgb-ci.manylinux2014_aarch64
-            runner: linux-arm64-cpu
           - image_repo: xgb-ci.manylinux_2_28_aarch64
             runner: linux-arm64-cpu
           - image_repo: xgb-ci.gpu_build_rockylinux8_aarch64
