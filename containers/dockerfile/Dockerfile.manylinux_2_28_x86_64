@@ -6,7 +6,7 @@ ENV GOSU_VERSION=1.10
 
 COPY scripts/install_gosu.sh /scripts/
 
-RUN dnf install -y java-17-openjdk-devel
+RUN dnf -y update && dnf -y install java-17-openjdk-devel
 
 # Install lightweight sudo (not bound to TTY)
 RUN sh /scripts/install_gosu.sh
