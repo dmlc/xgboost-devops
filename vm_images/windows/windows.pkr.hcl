@@ -86,7 +86,47 @@ build {
     script = "bootstrap.ps1"
   }
 
+  provisioner "powershell" {
+    script = "install_vs.ps1"
+  }
+
+  provisioner "windows-restart" {
+    restart_timeout = "15m"
+    max_retries     = 3
+  }
+
+  provisioner "powershell" {
+    script = "install_vs_workload.ps1"
+  }
+
+  provisioner "windows-restart" {
+    restart_timeout = "15m"
+    max_retries     = 3
+  }
+
+  provisioner "powershell" {
+    script = "verify_vs.ps1"
+  }
+
+  provisioner "powershell" {
+    script = "install_cuda_r.ps1"
+  }
+
+  provisioner "powershell" {
+    script = "install_nvidia_driver.ps1"
+  }
+
+  provisioner "windows-restart" {
+    restart_timeout = "15m"
+    max_retries     = 3
+  }
+
+  provisioner "powershell" {
+    script = "verify_nvidia_driver.ps1"
+  }
+
   provisioner "powershell" { # Sysprep should run the last
-    script = "sysprep.ps1"
+    script           = "sysprep.ps1"
+    valid_exit_codes = [0, 2300218] # EC2Launch shuts down before SSH can return an exit code
   }
 }

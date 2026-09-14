@@ -128,7 +128,7 @@ if __name__ == "__main__":
             "should be specified as a key-value pair in the form KEY=VALUE. "
             "The variables should match the ARG instructions in the Dockerfile. "
             "When passing multiple variables, specify --build-arg multiple times. "
-            "Example: --build-arg CUDA_VERSION_ARG=12.5 --build-arg RAPIDS_VERSION_ARG=24.10"
+            "Example: --build-arg CUDA_VERSION=13.3.0 --build-arg RAPIDS_VERSION=26.04"
         ),
     )
 

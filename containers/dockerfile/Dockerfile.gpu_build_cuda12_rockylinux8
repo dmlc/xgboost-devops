@@ -3,7 +3,7 @@ FROM nvcr.io/nvidia/cuda:$CUDA_VERSION-devel-rockylinux8
 ARG CUDA_VERSION
 ARG NCCL_VERSION
 ARG ARCH=x86_64
-ARG MINIFORGE_VERSION=25.11.0-1
+ARG MINIFORGE_VERSION=26.3.2-3
 ARG CMAKE_VERSION=4.1.0
 
 SHELL ["/bin/bash", "-c"]
@@ -36,7 +36,7 @@ RUN \
     export NCCL_VERSION=$NCCL_VERSION && \
     dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${CUDA_REPO_ARCH}/cuda-rhel8.repo && \
     dnf -y update && \
-    dnf install -y libnccl-${NCCL_VERSION}+cuda13.1 libnccl-devel-${NCCL_VERSION}+cuda13.1 libnccl-static-${NCCL_VERSION}+cuda13.1
+    dnf install -y libnccl-${NCCL_VERSION}+cuda${CUDA_SHORT} libnccl-devel-${NCCL_VERSION}+cuda${CUDA_SHORT}
 
 # Install lightweight sudo (not bound to TTY)
 RUN sh /scripts/install_gosu.sh
