@@ -10,10 +10,10 @@ ARG CMAKE_VERSION=4.1.0
 SHELL ["/bin/bash", "-c"]
 
 ENV PATH=/opt/miniforge/bin:/usr/local/ninja:$PATH
-ENV CC=/opt/rh/gcc-toolset-10/root/usr/bin/gcc
-ENV CXX=/opt/rh/gcc-toolset-10/root/usr/bin/c++
-ENV CPP=/opt/rh/gcc-toolset-10/root/usr/bin/cpp
-ENV CUDAHOSTCXX=/opt/rh/gcc-toolset-10/root/usr/bin/c++
+ENV CC=/opt/rh/gcc-toolset-14/root/usr/bin/gcc
+ENV CXX=/opt/rh/gcc-toolset-14/root/usr/bin/c++
+ENV CPP=/opt/rh/gcc-toolset-14/root/usr/bin/cpp
+ENV CUDAHOSTCXX=/opt/rh/gcc-toolset-14/root/usr/bin/c++
 ENV GOSU_VERSION=1.10
 
 COPY scripts/setup_cuda_rockylinux.sh scripts/install_gosu.sh /scripts/
@@ -21,7 +21,7 @@ COPY scripts/setup_cuda_rockylinux.sh scripts/install_gosu.sh /scripts/
 # Install all basic requirements
 RUN \
     bash /scripts/setup_cuda_rockylinux.sh && \
-    dnf install -y tar unzip wget xz git which ninja-build gcc-toolset-10-gcc gcc-toolset-10-binutils gcc-toolset-10-gcc-c++ && \
+    dnf install -y tar unzip wget xz git which ninja-build gcc-toolset-14-gcc gcc-toolset-14-binutils gcc-toolset-14-gcc-c++ && \
     # Miniforge
     wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-${ARCH}.sh && \
     bash conda.sh -b -p /opt/miniforge && \
