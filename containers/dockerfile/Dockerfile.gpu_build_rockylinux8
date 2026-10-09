@@ -1,5 +1,6 @@
 ARG CUDA_VERSION=notset
-FROM nvcr.io/nvidia/cuda:$CUDA_VERSION-devel-rockylinux8
+# NVIDIA's minimal build toolkit omits the large math libraries and profilers.
+FROM nvcr.io/nvidia/cuda:$CUDA_VERSION-base-rockylinux8
 ARG CUDA_VERSION
 ARG NCCL_VERSION
 ARG RAPIDS_VERSION
@@ -20,15 +21,25 @@ COPY scripts/setup_cuda_rockylinux.sh scripts/install_gosu.sh /scripts/
 
 # Install all basic requirements
 RUN \
-    bash /scripts/setup_cuda_rockylinux.sh && \
-    dnf install -y tar unzip wget xz git which ninja-build gcc-toolset-14-gcc gcc-toolset-14-binutils gcc-toolset-14-gcc-c++ && \
+    CUDA_SHORT=$(echo "${CUDA_VERSION%.*}" | tr . -) && \
+    # Allow patch updates within this CUDA minor release, then lock the resolved toolkit.
+    bash /scripts/setup_cuda_rockylinux.sh \
+      cuda-minimal-build-${CUDA_SHORT} cuda-nvml-devel-${CUDA_SHORT} cuda-nvtx-${CUDA_SHORT} && \
+    dnf install -y findutils tar unzip wget xz git which ninja-build gcc-toolset-14-gcc gcc-toolset-14-binutils gcc-toolset-14-gcc-c++ && \
+    # Clean in the installation layer; later deletions cannot shrink an earlier layer.
+    dnf clean all && rm -rf /var/cache/dnf && \
     # Miniforge
     wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-${ARCH}.sh && \
     bash conda.sh -b -p /opt/miniforge && \
-    /opt/miniforge/bin/python -m pip install awscli && \
+    rm conda.sh && \
+    /opt/miniforge/bin/python -m pip install --no-cache-dir awscli && \
+    # Miniforge uses hard links here, so the installed environment survives cache removal.
+    /opt/miniforge/bin/mamba clean --all --yes && \
+    rm -rf /opt/miniforge/pkgs && \
     # CMake
     wget -nv -O cmake.sh https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-${ARCH}.sh && \
-    bash cmake.sh --skip-license --prefix=/usr
+    bash cmake.sh --skip-license --prefix=/usr && \
+    rm cmake.sh
 
 # NCCL2 (License: https://docs.nvidia.com/deeplearning/sdk/nccl-sla/index.html)
 RUN \
@@ -36,8 +47,9 @@ RUN \
     export CUDA_SHORT=`echo $CUDA_VERSION | grep -o -E '[0-9]+\.[0-9]'` && \
     export NCCL_VERSION=$NCCL_VERSION && \
     dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${CUDA_REPO_ARCH}/cuda-rhel8.repo && \
-    dnf -y update && \
-    dnf install -y libnccl-${NCCL_VERSION}+cuda${CUDA_SHORT} libnccl-devel-${NCCL_VERSION}+cuda${CUDA_SHORT}
+    # System packages were already updated by setup_cuda_rockylinux.sh.
+    dnf install -y libnccl-${NCCL_VERSION}+cuda${CUDA_SHORT} libnccl-devel-${NCCL_VERSION}+cuda${CUDA_SHORT} && \
+    dnf clean all && rm -rf /var/cache/dnf
 
 # Install RMM
 # Patch out -Werror
@@ -54,7 +66,7 @@ RUN git clone -b v${RAPIDS_VERSION}.00 https://github.com/rapidsai/rmm.git --rec
       -DCPM_DOWNLOAD_fmt=ON -DCPM_DOWNLOAD_spdlog=ON && \
     cmake --build . --target install && \
     popd && popd && popd && \
-    rm -rf rmm
+    rm -rf rmm /root/.cache
 
 # Install lightweight sudo (not bound to TTY)
 RUN sh /scripts/install_gosu.sh

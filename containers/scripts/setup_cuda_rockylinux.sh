@@ -26,6 +26,12 @@ curl -fsSL "https://developer.download.nvidia.com/compute/cuda/repos/rhel8/${CUD
 
 dnf -y install dnf-plugins-core python3-dnf-plugin-versionlock
 
+# Optional toolkit packages must be installed before locking so their dependencies
+# can resolve to a consistent CUDA patch level. Existing callers pass no packages.
+if [[ $# -gt 0 ]]; then
+  dnf -y install "$@"
+fi
+
 CUDA_SHORT_DASHED=$(echo "${CUDA_VERSION}" | grep -o -E '[0-9]+\.[0-9]' | tr . -)
 mapfile -t CUDA_LOCK_PACKAGES < <(rpm -qa --qf '%{NAME}\n' | sed -n "/-${CUDA_SHORT_DASHED}$/p")
 
