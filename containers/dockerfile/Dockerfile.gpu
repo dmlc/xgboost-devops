@@ -1,5 +1,6 @@
 ARG CUDA_VERSION=notset
-FROM nvidia/cuda:$CUDA_VERSION-runtime-ubuntu22.04
+# Conda supplies the GPU math libraries; the CUDA runtime image duplicates them.
+FROM nvidia/cuda:$CUDA_VERSION-base-ubuntu22.04
 ARG CUDA_VERSION
 ARG RAPIDS_VERSION
   # Should be first 4 digits (e.g. 24.06)
@@ -25,17 +26,17 @@ RUN \
     sed -i 's/ports.ubuntu.com/mirrors.ocf.berkeley.edu/g' /etc/apt/sources.list && \
     apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/${CUDA_REPO_ARCH}/3bf863cc.pub && \
     apt-get update && \
-    apt-get install -y wget unzip bzip2 libgomp1 build-essential openjdk-17-jdk-headless && \
-    apt-get install "libnccl2=${NCCL_VERSION}+cuda${CUDA_SHORT}" \
-      "libnccl-dev=${NCCL_VERSION}+cuda${CUDA_SHORT}" -y --allow-change-held-packages && \
+    apt-get install --no-install-recommends -y wget unzip bzip2 libgomp1 build-essential openjdk-17-jre-headless && \
+    # Native tests run outside Conda and still need system NCCL, but not its static archive.
+    apt-get install --no-install-recommends "libnccl2=${NCCL_VERSION}+cuda${CUDA_SHORT}" \
+      -y --allow-change-held-packages && \
+    rm -rf /var/lib/apt/lists/* && \
     # Miniforge
     wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-${ARCH}.sh && \
-    bash conda.sh -b -p /opt/miniforge
-
-RUN mamba install awscli -y	# install awscli into base
-
-# Create new Conda environment with cuDF, Dask, and cuPy
-RUN \
+    bash conda.sh -b -p /opt/miniforge && \
+    rm conda.sh && \
+    mamba install awscli -y && \
+    # Install and clean in one layer so deleted package caches are not retained below it.
     export NCCL_SHORT_VER=$(echo "$NCCL_VERSION" | cut -d "-" -f 1) && \
     export CUDA_SHORT_VER=$(echo "$CUDA_VERSION" | grep -o -E '[0-9]+\.[0-9]') && \
     mamba create -y -n gpu_test -c rapidsai -c conda-forge -c nvidia \
@@ -44,10 +45,12 @@ RUN \
         dask \
         distributed \
         "dask-cuda=$RAPIDS_VERSION.*" "dask-cudf=$RAPIDS_VERSION.*" cupy \
-        numpy pytest pytest-timeout scipy scikit-learn pandas matplotlib wheel \
+        numpy pytest pytest-timeout scipy scikit-learn pandas matplotlib-base wheel \
         python-kubernetes urllib3 graphviz hypothesis "loky>=3.5.1" "cuda-python==${CUDA_VERSION}" \
         "pyspark>=4.0" grpcio grpcio-status googleapis-common-protos zstandard cloudpickle && \
-    mamba clean --all --yes
+    mamba clean --all --yes && \
+    # Environments use hard links here; retain their files without shipping the package cache.
+    rm -rf /opt/miniforge/pkgs /root/.cache
 
 # Install lightweight sudo (not bound to TTY)
 RUN sh /scripts/install_gosu.sh
