@@ -1,16 +1,5 @@
 ARG CUDA_VERSION=notset
-# Read compiler package versions from the matching toolkit so CUDA upgrades need only
-# the existing CUDA_VERSION setting. This stage is not included in the CI image.
-FROM nvcr.io/nvidia/cuda:$CUDA_VERSION-devel-rockylinux8 AS cuda-packages
-ARG CUDA_VERSION
-RUN CUDA_SHORT=$(echo "${CUDA_VERSION%.*}" | tr . -) && \
-    rpm -q --qf '%{NAME}-%{VERSION}-%{RELEASE}\n' \
-      cuda-nvcc-${CUDA_SHORT} cuda-cudart-devel-${CUDA_SHORT} \
-      cuda-nvml-devel-${CUDA_SHORT} cuda-nvtx-${CUDA_SHORT} \
-      > /tmp/cuda-packages.txt
-
-# XGBoost needs the compiler and runtime headers, not the full toolkit's math
-# libraries and profilers. Add a package here if a future build starts using it.
+# NVIDIA's minimal build toolkit omits the large math libraries and profilers.
 FROM nvcr.io/nvidia/cuda:$CUDA_VERSION-base-rockylinux8
 ARG CUDA_VERSION
 ARG NCCL_VERSION
@@ -29,19 +18,13 @@ ENV CUDAHOSTCXX=/opt/rh/gcc-toolset-14/root/usr/bin/c++
 ENV GOSU_VERSION=1.10
 
 COPY scripts/setup_cuda_rockylinux.sh scripts/install_gosu.sh /scripts/
-COPY --from=cuda-packages /tmp/cuda-packages.txt /tmp/cuda-packages.txt
 
 # Install all basic requirements
 RUN \
-    bash /scripts/setup_cuda_rockylinux.sh && \
-    mapfile -t CUDA_PACKAGES < /tmp/cuda-packages.txt && \
-    # Resolve CCCL for this CUDA minor version; older CCCL RPMs may be unavailable.
-    dnf install -y "${CUDA_PACKAGES[@]}" && \
-    # Lock newly installed CUDA dependencies before the later NCCL update.
     CUDA_SHORT=$(echo "${CUDA_VERSION%.*}" | tr . -) && \
-    mapfile -t CUDA_LOCK_PACKAGES < <(rpm -qa --qf '%{NAME}\n' | sed -n "/-${CUDA_SHORT}$/p") && \
-    dnf --disablerepo='*' versionlock add "${CUDA_LOCK_PACKAGES[@]}" && \
-    rm /tmp/cuda-packages.txt && \
+    # Allow patch updates within this CUDA minor release, then lock the resolved toolkit.
+    bash /scripts/setup_cuda_rockylinux.sh \
+      cuda-minimal-build-${CUDA_SHORT} cuda-nvml-devel-${CUDA_SHORT} cuda-nvtx-${CUDA_SHORT} && \
     dnf install -y findutils tar unzip wget xz git which ninja-build gcc-toolset-14-gcc gcc-toolset-14-binutils gcc-toolset-14-gcc-c++ && \
     # Clean in the installation layer; later deletions cannot shrink an earlier layer.
     dnf clean all && rm -rf /var/cache/dnf && \
