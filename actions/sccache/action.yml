@@ -12,6 +12,11 @@ inputs:
     required: false
     default: ${{ github.job }}
 
+  restore-only:
+    description: 'Restore existing compiler caches without saving a new snapshot'
+    required: false
+    default: 'false'
+
 runs:
   using: 'composite'
   steps:
@@ -157,7 +162,7 @@ runs:
         echo "SCCACHE_DIR=$SCCACHE_DIR" >> $env:GITHUB_ENV
 
     - name: Restore sccache cache (Unix)
-      if: runner.os != 'Windows'
+      if: runner.os != 'Windows' && inputs.restore-only != 'true'
       uses: actions/cache@v5.0.3
       with:
         path: ~/.cache/sccache
@@ -165,8 +170,25 @@ runs:
         restore-keys: sccache-${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ runner.arch }}-
 
     - name: Restore sccache cache (Windows)
-      if: runner.os == 'Windows'
+      if: runner.os == 'Windows' && inputs.restore-only != 'true'
       uses: actions/cache@v5.0.3
+      with:
+        path: ~\.cache\sccache
+        key: sccache-${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+        restore-keys: sccache-${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ runner.arch }}-
+
+    # The restore action has no post-job save, so PRs can reuse the default branch cache.
+    - name: Restore sccache cache without saving (Unix)
+      if: runner.os != 'Windows' && inputs.restore-only == 'true'
+      uses: actions/cache/restore@v5.0.3
+      with:
+        path: ~/.cache/sccache
+        key: sccache-${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+        restore-keys: sccache-${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ runner.arch }}-
+
+    - name: Restore sccache cache without saving (Windows)
+      if: runner.os == 'Windows' && inputs.restore-only == 'true'
+      uses: actions/cache/restore@v5.0.3
       with:
         path: ~\.cache\sccache
         key: sccache-${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
