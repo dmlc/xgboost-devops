@@ -12,27 +12,28 @@ ENV CPP=cpp-10
 ENV GOSU_VERSION=1.10
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64/
 
-COPY scripts/install_gosu.sh /scripts/
+COPY scripts/install_gosu.sh conda_env/linux_cpu_test.yml /scripts/
 
-# Install all basic requirements
+# Keep system GCC and LLVM: sanitizer CI runs outside the Conda environment.
+# Spark requires a Java runtime, but does not compile Java sources.
 RUN \
     sed -i 's/ports.ubuntu.com/mirrors.ocf.berkeley.edu/g' /etc/apt/sources.list && \
     apt-get update && \
-    apt-get install -y software-properties-common && \
+    apt-get install --no-install-recommends -y software-properties-common gpg-agent && \
     add-apt-repository ppa:ubuntu-toolchain-r/test && \
     apt-get update && \
-    apt-get install -y tar unzip wget git build-essential doxygen graphviz llvm libidn12 cmake ninja-build gcc-10 g++-10 openjdk-17-jdk-headless && \
+    apt-get install --no-install-recommends -y tar unzip wget git build-essential doxygen graphviz llvm libidn12 cmake ninja-build gcc-10 g++-10 openjdk-17-jre-headless && \
+    rm -rf /var/lib/apt/lists/* && \
     # Miniforge
     wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-${ARCH}.sh && \
-    bash conda.sh -b -p /opt/miniforge
-
-RUN mamba install awscli -y	# install awscli into base
-
-# Create new Conda environment
-COPY conda_env/linux_cpu_test.yml /scripts/
-RUN mamba create -n linux_cpu_test && \
-    mamba env update -n linux_cpu_test --file=/scripts/linux_cpu_test.yml && \
-    mamba clean --all --yes
+    bash conda.sh -b -p /opt/miniforge && \
+    rm conda.sh && \
+    # Clean in the installation layer so earlier layers do not retain package caches.
+    mamba install awscli -y && \
+    mamba env create --file=/scripts/linux_cpu_test.yml -y && \
+    mamba clean --all --yes && \
+    # Environments use hard links here, so their files survive removal of the package cache.
+    rm -rf /opt/miniforge/pkgs /root/.cache
 
 # Install lightweight sudo (not bound to TTY)
 RUN sh /scripts/install_gosu.sh

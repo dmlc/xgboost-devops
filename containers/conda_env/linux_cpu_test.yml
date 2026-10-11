@@ -16,7 +16,8 @@ dependencies:
 - scipy
 - scikit-learn>=1.4.1
 - pandas
-- matplotlib
+# CI renders plots without a desktop; avoid Qt and its dependencies.
+- matplotlib-base
 - dask
 - distributed
 - python-graphviz
