@@ -33,7 +33,9 @@ RUN \
     mamba env create --file=/scripts/linux_cpu_test.yml -y && \
     mamba clean --all --yes && \
     # Environments use hard links here, so their files survive removal of the package cache.
-    rm -rf /opt/miniforge/pkgs /root/.cache
+    rm -rf /opt/miniforge/pkgs /root/.cache && \
+    # XGBoost setup scripts chown this directory before creating Conda environments.
+    mkdir -p /opt/miniforge/pkgs/cache
 
 # Install lightweight sudo (not bound to TTY)
 RUN sh /scripts/install_gosu.sh
