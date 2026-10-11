@@ -36,6 +36,8 @@ RUN \
     # Miniforge uses hard links here, so the installed environment survives cache removal.
     /opt/miniforge/bin/mamba clean --all --yes && \
     rm -rf /opt/miniforge/pkgs && \
+    # XGBoost setup scripts chown this directory before creating Conda environments.
+    mkdir -p /opt/miniforge/pkgs/cache && \
     # CMake
     wget -nv -O cmake.sh https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-${ARCH}.sh && \
     bash cmake.sh --skip-license --prefix=/usr && \
