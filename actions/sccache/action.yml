@@ -93,7 +93,9 @@ runs:
         # Download and extract
         cd /tmp
         if command -v curl &> /dev/null; then
-            curl -fsSL -o sccache-archive.tar.gz "${URL}"
+            # GitHub Releases occasionally returns HTTP 502; retry the download only.
+            curl -fsSL --retry 5 --retry-connrefused --retry-max-time 300 \
+                --connect-timeout 60 --max-time 180 -o sccache-archive.tar.gz "${URL}"
         elif command -v wget &> /dev/null; then
             wget -nv -O sccache-archive.tar.gz "${URL}"
         else
