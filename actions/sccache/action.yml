@@ -1,5 +1,5 @@
-name: 'Setup sccache with GitHub Cache'
-description: 'Set up sccache using the rapidsai fork with GitHub Actions cache backend'
+name: 'Setup sccache with snapshot caching'
+description: 'Set up the rapidsai sccache fork with GitHub or RunsOn S3 cache snapshots'
 author: 'Jiaming Yuan'
 
 inputs:
@@ -171,9 +171,11 @@ runs:
         key: sccache-${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
         restore-keys: sccache-${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ runner.arch }}-
 
+    # RunsOn Windows runners store large snapshots in S3 to avoid GitHub eviction.
+    # Without a configured S3 bucket, GitHub-hosted runners keep GitHub caching.
     - name: Restore sccache cache (Windows)
       if: runner.os == 'Windows' && inputs.restore-only != 'true'
-      uses: actions/cache@v5.0.3
+      uses: runs-on/cache@3c223729b4fda74ee12f4976048dd69b420fdd26 # v5
       with:
         path: ~\.cache\sccache
         key: sccache-${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
@@ -190,7 +192,7 @@ runs:
 
     - name: Restore sccache cache without saving (Windows)
       if: runner.os == 'Windows' && inputs.restore-only == 'true'
-      uses: actions/cache/restore@v5.0.3
+      uses: runs-on/cache/restore@3c223729b4fda74ee12f4976048dd69b420fdd26 # v5
       with:
         path: ~\.cache\sccache
         key: sccache-${{ inputs.cache-key-prefix }}-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
