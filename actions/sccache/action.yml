@@ -145,6 +145,24 @@ runs:
         # Verify installation
         & "$INSTALL_DIR\sccache.exe" --version
 
+    - name: Ensure Zstandard is available (Windows)
+      if: runner.os == 'Windows'
+      shell: powershell
+      run: |
+        # Without zstd, cache actions fall back to slow gzip on our Windows AMIs.
+        # Remove this installer once the AMIs provide zstd on PATH.
+        if (Get-Command zstd -ErrorAction SilentlyContinue) { exit 0 }
+
+        $Version = "1.5.7"
+        $Directory = "zstd-v$Version-win64"
+        $Archive = "$env:RUNNER_TEMP\$Directory.zip"
+        Invoke-WebRequest -Uri "https://github.com/facebook/zstd/releases/download/v$Version/$Directory.zip" -OutFile $Archive
+        Expand-Archive -Path $Archive -DestinationPath $env:RUNNER_TEMP -Force
+        $InstallDir = "$env:RUNNER_TEMP\$Directory"
+        & "$InstallDir\zstd.exe" --version
+        if ($LASTEXITCODE -ne 0) { throw "Zstandard installation failed" }
+        $InstallDir | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
     - name: Configure sccache (Unix)
       if: runner.os != 'Windows'
       shell: bash
