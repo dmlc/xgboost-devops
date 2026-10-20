@@ -87,10 +87,6 @@ build {
   }
 
   provisioner "powershell" {
-    script = "install_zstd.ps1"
-  }
-
-  provisioner "powershell" {
     script = "install_vs.ps1"
   }
 
