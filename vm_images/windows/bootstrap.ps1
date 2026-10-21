@@ -22,6 +22,13 @@ Write-Host '>>> Installing gzip...'
 choco install gzip
 if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
 
+# Zstandard for sccache snapshots
+Write-Host '>>> Installing Zstandard...'
+choco install zstandard --version=1.5.7.20250308
+if ($LASTEXITCODE -ne 0) { throw "Last command failed" }
+zstd --version
+if ($LASTEXITCODE -ne 0) { throw "Zstandard installation failed" }
+
 # CMake
 Write-Host '>>> Installing CMake...'
 choco install cmake --version 4.2.1 --installargs "ADD_CMAKE_TO_PATH=System"
