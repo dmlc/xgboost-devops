@@ -78,8 +78,19 @@ build {
     script = "install_choco.ps1"
   }
 
-  provisioner "windows-restart" {
-    max_retries = 3
+  # Verify a changed boot time after each restart. The windows-restart
+  # provisioner's hostname check can succeed over SSH before shutdown completes.
+  provisioner "powershell" {
+    script           = "restart_windows.ps1"
+    skip_clean       = true         # Cleanup could race with Windows shutting down.
+    valid_exit_codes = [0, 2300218] # A reboot may disconnect SSH before the script returns.
+  }
+
+  provisioner "powershell" {
+    script              = "wait_for_restart.ps1"
+    start_retry_timeout = "15m"
+    max_retries         = 3
+    timeout             = "20m"
   }
 
   provisioner "powershell" {
@@ -90,18 +101,34 @@ build {
     script = "install_vs.ps1"
   }
 
-  provisioner "windows-restart" {
-    restart_timeout = "15m"
-    max_retries     = 3
+  provisioner "powershell" {
+    script           = "restart_windows.ps1"
+    skip_clean       = true
+    valid_exit_codes = [0, 2300218]
+  }
+
+  provisioner "powershell" {
+    script              = "wait_for_restart.ps1"
+    start_retry_timeout = "15m"
+    max_retries         = 3
+    timeout             = "20m"
   }
 
   provisioner "powershell" {
     script = "install_vs_workload.ps1"
   }
 
-  provisioner "windows-restart" {
-    restart_timeout = "15m"
-    max_retries     = 3
+  provisioner "powershell" {
+    script           = "restart_windows.ps1"
+    skip_clean       = true
+    valid_exit_codes = [0, 2300218]
+  }
+
+  provisioner "powershell" {
+    script              = "wait_for_restart.ps1"
+    start_retry_timeout = "15m"
+    max_retries         = 3
+    timeout             = "20m"
   }
 
   provisioner "powershell" {
@@ -116,9 +143,17 @@ build {
     script = "install_nvidia_driver.ps1"
   }
 
-  provisioner "windows-restart" {
-    restart_timeout = "15m"
-    max_retries     = 3
+  provisioner "powershell" {
+    script           = "restart_windows.ps1"
+    skip_clean       = true
+    valid_exit_codes = [0, 2300218]
+  }
+
+  provisioner "powershell" {
+    script              = "wait_for_restart.ps1"
+    start_retry_timeout = "15m"
+    max_retries         = 3
+    timeout             = "20m"
   }
 
   provisioner "powershell" {
