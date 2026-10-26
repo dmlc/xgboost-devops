@@ -34,7 +34,9 @@ runs:
     - uses: conda-incubator/setup-miniconda@v3
       with:
         miniforge-variant: Miniforge3
-        miniforge-version: latest
+        # Miniforge 26.9.4-0 makes conda init fail on Windows hosted runners.
+        # Keep Windows on the last known-good release while other OSes track latest.
+        miniforge-version: ${{ runner.os == 'Windows' && '26.7.2-1' || 'latest' }}
         activate-environment: ${{ inputs.environment-name }}
         environment-file: ${{ inputs.environment-file }}
         use-mamba: true
