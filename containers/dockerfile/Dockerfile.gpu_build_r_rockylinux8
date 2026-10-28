@@ -9,11 +9,11 @@ SHELL ["/bin/bash", "-c"]
 
 ENV PATH=/usr/local/ninja:/opt/software/packages/bin:/opt/R/$R_VERSION/bin:$PATH
 ENV LD_LIBRARY_PATH=/opt/software/packages/lib:/opt/R/$R_VERSION/lib64:$LD_LIBRARY_PATH
-ENV CC=/opt/rh/gcc-toolset-10/root/usr/bin/gcc
-ENV CXX=/opt/rh/gcc-toolset-10/root/usr/bin/c++
-ENV CPP=/opt/rh/gcc-toolset-10/root/usr/bin/cpp
-ENV F77=/opt/rh/gcc-toolset-10/root/usr/bin/gfortran
-ENV FC=/opt/rh/gcc-toolset-10/root/usr/bin/gfortran
+ENV CC=/opt/rh/gcc-toolset-14/root/usr/bin/gcc
+ENV CXX=/opt/rh/gcc-toolset-14/root/usr/bin/c++
+ENV CPP=/opt/rh/gcc-toolset-14/root/usr/bin/cpp
+ENV F77=/opt/rh/gcc-toolset-14/root/usr/bin/gfortran
+ENV FC=/opt/rh/gcc-toolset-14/root/usr/bin/gfortran
 ENV GOSU_VERSION=1.10
 
 COPY scripts/setup_cuda_rockylinux.sh scripts/install_gosu.sh /scripts/
@@ -24,9 +24,9 @@ RUN \
     dnf install -y tar unzip wget xz git which ninja-build readline-devel libX11-devel libXt-devel \
                    xorg-x11-server-devel openssl-devel zlib-devel bzip2-devel xz-devel \
                    pcre2-devel libcurl-devel texlive-* \
-                   gcc-toolset-10-gcc gcc-toolset-10-binutils gcc-toolset-10-gcc-c++ \
-                   gcc-toolset-10-gcc-gfortran gcc-toolset-10-libquadmath-devel \
-                   gcc-toolset-10-runtime gcc-toolset-10-libstdc++-devel && \
+                   gcc-toolset-14-gcc gcc-toolset-14-binutils gcc-toolset-14-gcc-c++ \
+                   gcc-toolset-14-gcc-gfortran gcc-toolset-14-libquadmath-devel \
+                   gcc-toolset-14-runtime gcc-toolset-14-libstdc++-devel && \
     wget -nv -O conda.sh https://github.com/conda-forge/miniforge/releases/download/$MINIFORGE_VERSION/Miniforge3-$MINIFORGE_VERSION-Linux-x86_64.sh && \
     bash conda.sh -b -p /opt/miniforge && \
     /opt/miniforge/bin/python -m pip install awscli && \
