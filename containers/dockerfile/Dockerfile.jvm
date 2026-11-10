@@ -32,7 +32,10 @@ RUN dnf -y update && \
     ln -s /opt/apache-maven-${MAVEN_VERSION}/ /opt/maven
 
 # Install Python packages
-RUN pip install numpy pytest scipy scikit-learn wheel kubernetes awscli
+RUN pip install numpy pytest scipy scikit-learn wheel kubernetes
+
+# Ensure Miniforge's AWS CLI is current; plain pip install can keep an older copy.
+RUN python -m pip install --upgrade awscli && aws --version
 
 # Install lightweight sudo (not bound to TTY)
 RUN sh /scripts/install_gosu.sh

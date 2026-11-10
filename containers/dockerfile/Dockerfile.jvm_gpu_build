@@ -40,7 +40,10 @@ RUN \
     dnf install -y libnccl-${NCCL_VERSION}+cuda${CUDA_SHORT} libnccl-devel-${NCCL_VERSION}+cuda${CUDA_SHORT} libnccl-static-${NCCL_VERSION}+cuda${CUDA_SHORT}
 
 # Install Python packages
-RUN pip install numpy pytest scipy scikit-learn wheel kubernetes awscli
+RUN pip install numpy pytest scipy scikit-learn wheel kubernetes
+
+# Ensure Miniforge's AWS CLI is current; plain pip install can keep an older copy.
+RUN python -m pip install --upgrade awscli && aws --version
 
 # Install lightweight sudo (not bound to TTY)
 RUN sh /scripts/install_gosu.sh
