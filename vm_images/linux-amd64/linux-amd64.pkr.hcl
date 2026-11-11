@@ -7,6 +7,15 @@ packer {
   }
 }
 
+variable "iam_instance_profile" {
+  type        = string
+  description = "EC2 instance profile with permission to pull xgb-ci.gpu from ECR."
+  validation {
+    condition     = length(trimspace(var.iam_instance_profile)) > 0
+    error_message = "An instance profile with ECR pull permissions is required."
+  }
+}
+
 locals {
   ami_name_prefix = "xgboost-ci"
   image_name      = "RunsOn worker with Ubuntu 24.04 AMD64 + CUDA driver 580"
@@ -34,20 +43,21 @@ source "amazon-ebs" "runs-on-linux-amd64" {
   associate_public_ip_address = true
   communicator                = "ssh"
   instance_type               = "g4dn.xlarge"
+  iam_instance_profile        = var.iam_instance_profile
   region                      = "${local.region}"
   ssh_timeout                 = "10m"
   ssh_username                = "ubuntu"
   ssh_file_transfer_method    = "sftp"
   user_data_file              = "setup_ssh.sh"
   launch_block_device_mappings {
-    device_name = "/dev/sda1"
-    volume_size = "${local.volume_size}"
-    volume_type = "gp3"
+    device_name           = "/dev/sda1"
+    volume_size           = "${local.volume_size}"
+    volume_type           = "gp3"
     delete_on_termination = true
   }
-  aws_polling {   # Wait up to 1 hour until the AMI is ready
+  aws_polling { # Wait up to 1 hour until the AMI is ready
     delay_seconds = 15
-    max_attempts = 240
+    max_attempts  = 240
   }
   snapshot_tags = {
     Name      = "${local.image_name}"
@@ -75,5 +85,12 @@ build {
   provisioner "shell" {
     pause_before = "1m0s"
     script       = "bootstrap.sh"
+  }
+
+  provisioner "shell" {
+    script = "preload_gpu_image.sh"
+    environment_vars = [
+      "AWS_DEFAULT_REGION=${local.region}",
+    ]
   }
 }
