@@ -2,6 +2,8 @@ line-length = 120
 
 [lint]
 select = [
+    # import sorting (isort)
+    "I",
     # numpy 2.0 deprecations/removals
     "NPY201",
 ]
